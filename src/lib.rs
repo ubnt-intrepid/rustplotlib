@@ -1,6 +1,6 @@
 extern crate rustc_serialize;
 extern crate rmp_serialize;
-extern crate cpython;
+// extern crate cpython;
 
 // re-exports
 pub mod axes2d;

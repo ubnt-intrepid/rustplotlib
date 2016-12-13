@@ -11,7 +11,6 @@ license = "MIT"
 [dependencies]
 rustc-serialize = "^0.3.22"
 rmp-serialize = "^0.7.0"
-cpython = { git = "https://github.com/dgrunwald/rust-cpython.git" }
 
 [dev-dependencies]
 rand = "^0.3.15"
