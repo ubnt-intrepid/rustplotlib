@@ -1,18 +1,26 @@
 # `rustplotlib`
 [![](http://meritbadge.herokuapp.com/rustplotlib)](https://crates.io/crates/rustplotlib)
 
-A tiny library for creating 2D charts, by using matplotlib
+__WARNING__
 
-__WARNING!__: under development.
+This project is currently under the development.
+It means that some broken changes will be occurred in API.
+
+## Overview
+A tiny library for creating 2D charts, by using matplotlib
 
 This project is inspired by:
 * mneumann's [matplotlib-rs](https://github.com/mneumann/matplotlib-rs)
 * SiegeLord's [RustGnuplot](https://github.com/SiegeLord/RustGnuplot)
 
-## Features (in progress)
+## Features
 * builder style API
 * support for multiple backends (gnuplot, matplotlib)
 
+## API Documentation
+* Latest release: [v0.0.1](https://docs.rs/rustplotlib/0.0.1/rustplotlib/)
+* Development: [master](https://ubnt-intrepid.github.io/rustplotlib/)
+
 ## License
-This crate is released under the MIT license.
+This software is released under the MIT license.
 See [LICENSE](LICENSE) for details.
