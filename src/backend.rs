@@ -8,7 +8,7 @@ use rustc_serialize::base64::{self, ToBase64};
 use rmp_serialize::Encoder;
 // use cpython;
 
-use super::Figure;
+use figure::Figure;
 
 const PRELUDE: &'static str = r#"#!/usr/bin/env python
 
@@ -38,20 +38,17 @@ def make_axes(ax, data):
     ax.grid(grid)
     ax.legend(loc='upper left')
 
-def make_figure(data):
-    fig = plt.figure()
+def make_figure(fig, data):
+    # TODO: support for multiple subplots
+    data = data[0]
     ax = fig.add_subplot(1, 1, 1)
     make_axes(ax, data)
-    return fig
 "#;
 
-///
 pub trait Backend {
-  ///
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self>;
 }
 
-///
 pub struct Matplotlib {
   child: Child,
 }
@@ -76,7 +73,7 @@ impl Matplotlib {
 
 impl Backend for Matplotlib {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    let script = fig.to_script();
+    let script = to_script(fig);
     self.child.stdin.as_mut().unwrap().write_all(script.as_bytes())?;
     Ok(self)
   }
@@ -88,26 +85,19 @@ impl Drop for Matplotlib {
   }
 }
 
-trait ToPyScript {
-  ///
-  fn to_script(&self) -> String;
+fn to_script(fig: &Figure) -> String {
+  let mut buf = Vec::new();
+  fig.encode(&mut Encoder::new(&mut buf)).unwrap();
+  let data = buf.to_base64(base64::STANDARD);
+
+  let mut s = format!("data = msgpack.unpackb(base64.b64decode(r\"{}\"))\n", data);
+  s += "fig = plt.figure()\n";
+  s += "make_figure(fig, data)";
+  s
 }
 
-impl ToPyScript for Figure {
-  fn to_script(&self) -> String {
-    let mut buf = Vec::new();
-    self.axes.encode(&mut Encoder::new(&mut buf)).unwrap();
-    let data = buf.to_base64(base64::STANDARD);
-
-    let mut s = format!("data = msgpack.unpackb(base64.b64decode(r\"{}\"))\n", data);
-    s += "fig = make_figure(data)";
-    s
-  }
-}
-
-///
 #[allow(dead_code)]
-struct MatplotlibNative {
+pub struct MatplotlibNative {
     // TODO: implement
 }
 
@@ -127,7 +117,6 @@ impl Backend for MatplotlibNative {
   }
 }
 
-///
 pub struct MatplotlibFile {
   file: File,
 }
@@ -144,7 +133,7 @@ impl MatplotlibFile {
 
 impl Backend for MatplotlibFile {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    let script = format!("{}\n{}\n", PRELUDE, fig.to_script());
+    let script = format!("{}\n{}\n", PRELUDE, to_script(&fig));
     self.file.write_all(script.as_bytes())?;
 
     Ok(self)
