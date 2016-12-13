@@ -18,7 +18,7 @@ This project is inspired by:
 * support for multiple backends (gnuplot, matplotlib)
 
 ## API Documentation
-* Latest release: [v0.0.1](https://docs.rs/rustplotlib/0.0.1/rustplotlib/)
+* Latest release: [docs.rs](https://docs.rs/rustplotlib)
 * Development: [master](https://ubnt-intrepid.github.io/rustplotlib/rustplotlib/)
 
 ## License
