@@ -1,5 +1,5 @@
 use rmp_serialize::{encode, Encoder};
-use axes2d::Axes2D;
+use axes2d::{Axes2D, RmpEncodable};
 
 #[derive(Debug)]
 pub struct Figure {
