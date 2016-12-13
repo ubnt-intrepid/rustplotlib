@@ -1,9 +1,11 @@
 use std::fmt::Debug;
 use encode::{Encoder, Encodable, EncodeResult};
 
+
 pub trait PlotData: Debug + Encodable {
   fn plot_type(&self) -> &'static str;
 }
+
 
 #[derive(Debug)]
 pub struct Axes2D {

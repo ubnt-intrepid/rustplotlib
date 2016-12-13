@@ -6,7 +6,6 @@ use std::process::{Command, Child, Stdio};
 use rustc_serialize::base64::{self, ToBase64};
 // use cpython;
 
-use encode::Encoder;
 use figure::Figure;
 
 const PRELUDE: &'static str = r#"#!/usr/bin/env python
@@ -85,9 +84,9 @@ impl Drop for Matplotlib {
 }
 
 fn to_script(fig: &Figure) -> String {
-  use encode::Encodable;
+  use encode::{Encodable, Encoder};
   let mut buf = Vec::new();
-  Encodable::encode(fig, &mut Encoder::new(&mut buf)).unwrap();
+  fig.encode(&mut Encoder::new(&mut buf)).unwrap();
   let data = buf.to_base64(base64::STANDARD);
 
   let mut s = format!("data = msgpack.unpackb(base64.b64decode(r\"{}\"))\n", data);
