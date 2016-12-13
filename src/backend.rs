@@ -3,7 +3,6 @@ use std::fs::{File, OpenOptions};
 use std::path::Path;
 use std::process::{Command, Child, Stdio};
 
-use rustc_serialize::Encodable;
 use rustc_serialize::base64::{self, ToBase64};
 use rmp_serialize::Encoder;
 // use cpython;

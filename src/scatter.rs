@@ -1,5 +1,5 @@
 use rustc_serialize::Encodable;
-use rmp_serialize::Encoder;
+use rmp_serialize::{self, Encoder};
 use axes2d::PlotData;
 
 #[derive(Debug, RustcEncodable)]
@@ -49,7 +49,7 @@ impl PlotData for Scatter {
     "scatter"
   }
 
-  fn encode(&self, encoder: &mut Encoder) {
-    Encodable::encode(self, encoder).unwrap();
+  fn encode(&self, encoder: &mut Encoder) -> Result<(), rmp_serialize::encode::Error> {
+    Encodable::encode(self, encoder)
   }
 }
