@@ -12,7 +12,7 @@ language: rust
 
 rust:
   - stable
-  - nightly
+  #- nightly
 
 before_script:
   # load travis-cargo
