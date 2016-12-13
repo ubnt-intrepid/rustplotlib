@@ -14,13 +14,13 @@ fn main() {
   let x2: Vec<f64> = (0..100).into_iter().map(|_| uniform.ind_sample(&mut rng)).collect();
 
   let fig = Figure::new().axes2d(Axes2D::new()
-    .scatter(Scatter::new()
+    .add(Scatter::new()
       .data(x1.iter().take(50).cloned().collect(),
             x2.iter().take(50).cloned().collect())
       .label("Red")
       .marker("o")
       .color("red"))
-    .scatter(Scatter::new()
+    .add(Scatter::new()
       .data(x1.iter().skip(50).cloned().collect(),
             x2.iter().skip(50).cloned().collect())
       .label("Blue")
