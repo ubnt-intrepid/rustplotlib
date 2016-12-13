@@ -40,7 +40,6 @@ def make_axes(ax, data):
 
 def make_figure(fig, data):
     # TODO: support for multiple subplots
-    data = data[0]
     ax = fig.add_subplot(1, 1, 1)
     make_axes(ax, data)
 "#;

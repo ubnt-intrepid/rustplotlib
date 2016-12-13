@@ -1,10 +1,10 @@
 use std::fmt::Debug;
-use rmp_serialize::{self, Encoder};
+use rmp_serialize::{encode, Encoder};
 use scatter::Scatter;
 
 pub trait PlotData: Debug {
   fn plot_type(&self) -> &'static str;
-  fn encode(&self, &mut Encoder) -> Result<(), rmp_serialize::encode::Error>;
+  fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error>;
 }
 
 #[derive(Debug)]
@@ -45,7 +45,7 @@ impl Axes2D {
     self
   }
 
-  pub fn encode(&self, s: &mut Encoder) -> Result<(), rmp_serialize::encode::Error> {
+  pub fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error> {
     use rustc_serialize::Encoder;
     s.emit_seq(4, |s| {
       s.emit_seq(self.plot_data.len(), |s| {

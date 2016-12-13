@@ -1,4 +1,4 @@
-use rmp_serialize::{self, Encoder};
+use rmp_serialize::{encode, Encoder};
 use axes2d::Axes2D;
 
 #[derive(Debug)]
@@ -16,13 +16,13 @@ impl Figure {
     self
   }
 
-  pub fn encode(&self, encoder: &mut Encoder) -> Result<(), rmp_serialize::encode::Error> {
+  pub fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error> {
     use rustc_serialize::Encoder;
-    encoder.emit_seq(1, |s| {
-      if let Some(ref axes) = self.axes {
-        axes.encode(s)?;
+    s.emit_option(|s| {
+      match self.axes {
+        Some(ref axes) => s.emit_option_some(|s| axes.encode(s)),
+        None => s.emit_option_none(),
       }
-      Ok(())
     })
   }
 }
