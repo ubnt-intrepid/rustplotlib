@@ -1,3 +1,7 @@
+use rustc_serialize::Encodable;
+use rmp_serialize::Encoder;
+use axes2d::PlotData;
+
 #[derive(Debug, RustcEncodable)]
 pub struct Scatter {
   x: Vec<f64>,
@@ -37,5 +41,15 @@ impl Scatter {
   pub fn marker(mut self, marker: &str) -> Self {
     self.marker = marker.to_owned();
     self
+  }
+}
+
+impl PlotData for Scatter {
+  fn plot_type(&self) -> &'static str {
+    "scatter"
+  }
+
+  fn encode(&self, encoder: &mut Encoder) {
+    Encodable::encode(self, encoder).unwrap();
   }
 }

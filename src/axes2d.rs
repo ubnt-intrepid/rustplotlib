@@ -1,4 +1,11 @@
+use rmp_serialize::Encoder;
 use scatter::Scatter;
+
+pub trait PlotData {
+  fn plot_type(&self) -> &'static str;
+  fn encode(&self, &mut Encoder);
+}
+
 
 #[derive(Debug, RustcEncodable)]
 pub struct Axes2D {
