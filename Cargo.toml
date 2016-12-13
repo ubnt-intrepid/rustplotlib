@@ -1,0 +1,14 @@
+[package]
+name = "rustplotlib"
+version = "0.0.1"
+authors = ["Yusuke Sasaki <yusuke.sasaki.nuem@gmail.com>"]
+description = "A tiny library to create charts, by using matplotlib."
+homepage = "https://github.com/ubnt-intrepid/rustplotlib"
+repository = "https://github.com/ubnt-intrepid/rustplotlib"
+readme = "README.md"
+license = "MIT"
+
+[dependencies]
+rustc-serialize = "^0.3.22"
+rmp-serialize = "^0.7.0"
+cpython = { git = "https://github.com/dgrunwald/rust-cpython.git" }
