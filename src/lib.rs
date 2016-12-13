@@ -3,9 +3,9 @@ extern crate rmp_serialize;
 // extern crate cpython;
 
 // re-exports
-pub mod axes2d;
+mod axes2d;
 pub mod backend;
-pub mod figure;
+mod figure;
 
 pub use axes2d::{Axes2D, Scatter};
 pub use backend::Backend;

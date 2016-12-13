@@ -19,7 +19,7 @@ This project is inspired by:
 
 ## API Documentation
 * Latest release: [v0.0.1](https://docs.rs/rustplotlib/0.0.1/rustplotlib/)
-* Development: [master](https://ubnt-intrepid.github.io/rustplotlib/)
+* Development: [master](https://ubnt-intrepid.github.io/rustplotlib/rustplotlib/)
 
 ## License
 This software is released under the MIT license.

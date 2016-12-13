@@ -6,3 +6,4 @@ Cargo.lock
 *.svg
 
 report.py
+gh-pages/
