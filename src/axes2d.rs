@@ -1,7 +1,8 @@
 use std::fmt::Debug;
 use rmp_serialize::{encode, Encoder};
-use scatter::Scatter;
 
+// to avoid generic parameter, use this crate to encode to msgpack format,
+// instead of `rustc_serialize::Encodable`
 pub trait RmpEncodable {
   fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error>;
 }
@@ -28,8 +29,8 @@ impl Axes2D {
     }
   }
 
-  pub fn scatter(mut self, s: Scatter) -> Self {
-    self.plot_data.push(Box::new(s));
+  pub fn add<P: 'static + PlotData>(mut self, p: P) -> Self {
+    self.plot_data.push(Box::new(p));
     self
   }
 
