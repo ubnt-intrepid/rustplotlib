@@ -21,7 +21,8 @@ def plot_scatter(ax, data):
     ax.scatter(x1, x2, label=l, color=c, marker=m)
 
 def make_plot(ax, data):
-    plot_type = "scatter"
+    plot_type, data = data
+    plot_type = plot_type.decode('utf-8')
     if plot_type == "scatter":
         plot_scatter(ax, data)
 
