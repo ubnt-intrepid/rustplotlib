@@ -1,7 +1,4 @@
-# `rustplotlib`
-[![](http://meritbadge.herokuapp.com/rustplotlib)](https://crates.io/crates/rustplotlib)
-[![docs.rs](https://docs.rs/rustplotlib/badge.svg)](https://docs.rs/rustplotlib)
-[![Build Status](https://travis-ci.org/ubnt-intrepid/rustplotlib.svg?branch=master)](https://travis-ci.org/ubnt-intrepid/rustplotlib)
+# `rustplotlib` [![](http://meritbadge.herokuapp.com/rustplotlib)](https://crates.io/crates/rustplotlib) [![docs.rs](https://docs.rs/rustplotlib/badge.svg)](https://docs.rs/rustplotlib) [![Build Status](https://travis-ci.org/ubnt-intrepid/rustplotlib.svg?branch=master)](https://travis-ci.org/ubnt-intrepid/rustplotlib)
 
 A tiny library for creating 2D charts, by using matplotlib.
 
