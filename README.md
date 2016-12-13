@@ -1,5 +1,6 @@
 # `rustplotlib`
 [![](http://meritbadge.herokuapp.com/rustplotlib)](https://crates.io/crates/rustplotlib)
+[![Build Status](https://travis-ci.org/ubnt-intrepid/rustplotlib.svg?branch=master)](https://travis-ci.org/ubnt-intrepid/rustplotlib)
 
 __WARNING__
 
@@ -10,6 +11,7 @@ It means that some broken changes will be occurred in API.
 A tiny library for creating 2D charts, by using matplotlib
 
 This project is inspired by:
+
 * mneumann's [matplotlib-rs](https://github.com/mneumann/matplotlib-rs)
 * SiegeLord's [RustGnuplot](https://github.com/SiegeLord/RustGnuplot)
 
