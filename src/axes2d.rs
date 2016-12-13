@@ -1,13 +1,7 @@
 use std::fmt::Debug;
-use rmp_serialize::{encode, Encoder};
+use encode::{Encoder, Encodable, EncodeResult};
 
-// to avoid generic parameter, use this crate to encode to msgpack format,
-// instead of `rustc_serialize::Encodable`
-pub trait RmpEncodable {
-  fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error>;
-}
-
-pub trait PlotData: Debug + RmpEncodable {
+pub trait PlotData: Debug + Encodable {
   fn plot_type(&self) -> &'static str;
 }
 
@@ -50,8 +44,8 @@ impl Axes2D {
   }
 }
 
-impl RmpEncodable for Axes2D {
-  fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error> {
+impl Encodable for Axes2D {
+  fn encode(&self, s: &mut Encoder) -> EncodeResult {
     use rustc_serialize::Encoder;
     s.emit_seq(4, |s| {
       s.emit_seq(self.plot_data.len(), |s| {

@@ -1,5 +1,5 @@
-use rmp_serialize::{encode, Encoder};
-use axes2d::{Axes2D, RmpEncodable};
+use axes2d::Axes2D;
+use encode::{Encodable, Encoder, EncodeResult};
 
 #[derive(Debug)]
 pub struct Figure {
@@ -15,8 +15,10 @@ impl Figure {
     self.axes = Some(axes);
     self
   }
+}
 
-  pub fn encode(&self, s: &mut Encoder) -> Result<(), encode::Error> {
+impl Encodable for Figure {
+  fn encode(&self, s: &mut Encoder) -> EncodeResult {
     use rustc_serialize::Encoder;
     s.emit_option(|s| {
       match self.axes {

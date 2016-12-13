@@ -3,6 +3,7 @@ extern crate rmp_serialize;
 // extern crate cpython;
 
 mod axes2d;
+mod encode;
 mod figure;
 mod scatter;
 
