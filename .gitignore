@@ -1,2 +1,8 @@
 target
 Cargo.lock
+
+*.pdf
+*.png
+*.svg
+
+report.py
