@@ -8,7 +8,8 @@ use util::msgpack;
 
 const PRELUDE: &'static str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
                                                    "/scripts/prelude.py"));
-
+const EXTRACT_DATA: &'static str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
+                                                        "/scripts/extract_data.py"));
 
 pub struct MatplotlibFile {
   path: PathBuf,
@@ -30,11 +31,13 @@ impl MatplotlibFile {
       .open(&self.path)?;
 
     file.write_all(PRELUDE.as_bytes())?;
-    file.write_all(b"\n")?;
+    file.write_all(EXTRACT_DATA.as_bytes())?;
+
+    file.write_all(b"\n#==>\n#")?;
     if let Some(ref fig) = self.fig {
-      file.write_all(format!(r#"fig = evaluate(r"{}")"#, msgpack(fig)).as_bytes())?;
-      file.write_all(b"\n")?;
+      file.write_all(msgpack(fig).as_bytes())?;
     }
+    file.write_all(b"\n#<==\n")?;
 
     Ok(())
   }

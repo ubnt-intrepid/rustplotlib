@@ -30,14 +30,14 @@ fn main() {
     .ylabel("Distance [mm]")
     .grid(true));
 
-  apply_mpl(&fig, "result.png").unwrap();
+  apply_mpl(&fig, "scatter.png").unwrap();
 
-  // backend::MatplotlibFile::new("report.py")
-  //   .unwrap()
-  //   .evaluate(&fig)
-  //   .unwrap()
-  //   .flush()
-  //   .unwrap();
+  backend::MatplotlibFile::new("scatter.py")
+    .unwrap()
+    .evaluate(&fig)
+    .unwrap()
+    .flush()
+    .unwrap();
 }
 
 fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {

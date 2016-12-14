@@ -5,5 +5,5 @@ Cargo.lock
 *.png
 *.svg
 
-report.py
+*.py
 gh-pages/
