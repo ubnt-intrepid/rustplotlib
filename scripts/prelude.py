@@ -34,7 +34,7 @@ def make_figure(fig, data):
     make_axes(ax, data)
 
 def evaluate(data):
-    data = unpackb(b64decode(data)
+    data = msgpack.unpackb(base64.b64decode(data))
     fig = plt.figure()
     make_figure(fig, data)
     return fig

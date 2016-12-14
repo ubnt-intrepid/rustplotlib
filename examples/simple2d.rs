@@ -30,10 +30,21 @@ fn main() {
     .ylabel("Distance [mm]")
     .grid(true));
 
-  backend::MatplotlibFile::new("report.py")
+  backend::Matplotlib::new()
+    .unwrap()
+    .exec("plt.style.use('ggplot')")
     .unwrap()
     .evaluate(&fig)
     .unwrap()
-    .flush()
+    .exec("fig.savefig('result.png')")
+    .unwrap()
+    .wait()
     .unwrap();
+
+  // backend::MatplotlibFile::new("report.py")
+  //   .unwrap()
+  //   .evaluate(&fig)
+  //   .unwrap()
+  //   .flush()
+  //   .unwrap();
 }
