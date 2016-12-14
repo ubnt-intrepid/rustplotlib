@@ -1,10 +1,12 @@
 extern crate rustc_serialize;
 extern crate rmp_serialize;
-// extern crate cpython;
+#[cfg(feature = "native")]
+extern crate cpython;
 
 mod axes2d;
 mod figure;
 mod scatter;
+mod util;
 
 // re-exports
 pub mod backend;

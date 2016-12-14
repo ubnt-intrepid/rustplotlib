@@ -2,7 +2,11 @@
 
 import base64
 import msgpack
+import sys
 import matplotlib.pyplot as plt
+
+tgbegin = '\n#==>\n#'.encode()
+tgend   = '\n#<==\n'.encode()
 
 def plot_scatter(ax, data):
     x1, x2 = data[0:2]
@@ -32,3 +36,21 @@ def make_figure(fig, data):
     data = data[0]
     ax = fig.add_subplot(1, 1, 1)
     make_axes(ax, data)
+
+def read_data():
+    try:
+        fname = __file__
+        if fname.endswith('.pyc'):
+            fname = fname[0:-1]
+        data = open(fname, 'rb').read()
+        data = data[data.find(tgbegin) + len(tgbegin) : data.find(tgend)]
+    except NameError:
+        data = sys.stdin.buffer.read()
+
+    return msgpack.unpackb(base64.b64decode(data))
+
+def evaluate(data):
+    data = msgpack.unpackb(base64.b64decode(data))
+    fig = plt.figure()
+    make_figure(fig, data)
+    return fig

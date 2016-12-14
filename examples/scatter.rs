@@ -30,8 +30,32 @@ fn main() {
     .ylabel("Distance [mm]")
     .grid(true));
 
-  backend::MatplotlibFile::new("report.py")
-    .unwrap()
-    .evaluate(&fig)
-    .unwrap();
+  apply_mpl(&fig, "scatter.png").unwrap();
+  apply_mpl_file(&fig, "scatter.py").unwrap();
+
+  #[cfg(feature = "native")]
+  apply_mpl_native(&fig, "scatter_native.png").unwrap();
+}
+
+fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
+  let mut mp = backend::Matplotlib::new()?;
+  mp.exec("plt.style.use('ggplot')")?
+    .evaluate(fig)?
+    .exec(format!("fig.savefig('{}')", filename))?
+    .wait()
+}
+
+fn apply_mpl_file(fig: &Figure, filename: &str) -> std::io::Result<()> {
+  let mut mp = backend::MatplotlibFile::new(filename)?;
+  mp.evaluate(fig)?
+    .flush()
+}
+
+#[cfg(feature = "native")]
+fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
+  let mut mp = backend::MatplotlibNative::new();
+  mp.exec("plt.style.use('dark_background')");
+  mp.evaluate(fig)?
+    .exec(format!("plt.savefig('{}')", filename));
+  Ok(())
 }
