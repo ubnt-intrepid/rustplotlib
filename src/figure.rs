@@ -1,6 +1,6 @@
 use axes2d::Axes2D;
 
-#[derive(Debug, RustcEncodable)]
+#[derive(Debug, Clone, RustcEncodable)]
 pub struct Figure {
   axes: Option<Axes2D>,
 }

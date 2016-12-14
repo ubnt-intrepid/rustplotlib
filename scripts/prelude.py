@@ -32,3 +32,9 @@ def make_figure(fig, data):
     data = data[0]
     ax = fig.add_subplot(1, 1, 1)
     make_axes(ax, data)
+
+def evaluate(data):
+    data = unpackb(b64decode(data)
+    fig = plt.figure()
+    make_figure(fig, data)
+    return fig

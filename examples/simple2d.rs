@@ -33,5 +33,7 @@ fn main() {
   backend::MatplotlibFile::new("report.py")
     .unwrap()
     .evaluate(&fig)
+    .unwrap()
+    .flush()
     .unwrap();
 }

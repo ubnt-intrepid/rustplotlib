@@ -1,6 +1,6 @@
 use std::io::{self, Write};
-use std::fs::{File, OpenOptions};
-use std::path::Path;
+use std::fs::OpenOptions;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Child, Stdio};
 
 use rustc_serialize::base64::{self, ToBase64};
@@ -31,31 +31,32 @@ pub struct Matplotlib {
 
 impl Matplotlib {
   pub fn new() -> io::Result<Matplotlib> {
-    let mut child = Command::new("python").arg("-")
+    let child = Command::new("python").arg("-")
       .stdin(Stdio::piped())
       .stdout(Stdio::inherit())
       .stderr(Stdio::inherit())
       .spawn()?;
 
-    child.stdin.as_mut().unwrap().write_all(PRELUDE.as_bytes())?;
-
-    Ok(Matplotlib { child: child })
+    let mut mpl = Matplotlib { child: child };
+    mpl.exec(PRELUDE)?;
+    Ok(mpl)
   }
 
   pub fn wait(&mut self) -> Result<(), ()> {
     self.child.wait().and(Ok(())).or(Err(()))
   }
+
+  fn exec<S: AsRef<str>>(&mut self, script: S) -> io::Result<()> {
+    let ref mut stdin = self.child.stdin.as_mut().unwrap();
+    stdin.write_all(script.as_ref().as_bytes())?;
+    stdin.write_all(b"\n")?;
+    Ok(())
+  }
 }
 
 impl Backend for Matplotlib {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    {
-      let ref mut stdin = self.child.stdin.as_mut().unwrap();
-      stdin.write_all(format!("data = r\"{}\"\n", msgpack(fig)).as_bytes())?;
-      stdin.write_all(b"data = msgpack.unpackb(base64.b64decode(data)\n")?;
-      stdin.write_all(b"fig = plt.figure()\n")?;
-      stdin.write_all(b"make_figure(fig, data)\n")?;
-    }
+    self.exec(format!(r#"fig = evaluate(r"{}")"#, msgpack(fig)))?;
     Ok(self)
   }
 }
@@ -90,28 +91,38 @@ impl Backend for MatplotlibNative {
 
 
 pub struct MatplotlibFile {
-  file: File,
+  path: PathBuf,
+  fig: Option<Figure>,
 }
 
 impl MatplotlibFile {
   pub fn new<P: AsRef<Path>>(path: P) -> io::Result<MatplotlibFile> {
-    let file = OpenOptions::new().write(true)
+    Ok(MatplotlibFile {
+      path: path.as_ref().to_path_buf(),
+      fig: None,
+    })
+  }
+
+  pub fn flush(&self) -> io::Result<()> {
+    let mut file = OpenOptions::new().write(true)
       .create(true)
       .truncate(true)
-      .open(path)?;
-    Ok(MatplotlibFile { file: file })
+      .open(&self.path)?;
+
+    file.write_all(PRELUDE.as_bytes())?;
+    file.write_all(b"\n")?;
+    if let Some(ref fig) = self.fig {
+      file.write_all(format!(r#"fig = evaluate(r"{}")"#, msgpack(fig)).as_bytes())?;
+      file.write_all(b"\n")?;
+    }
+
+    Ok(())
   }
 }
 
 impl Backend for MatplotlibFile {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    let mut s = format!("data = msgpack.unpackb(base64.b64decode(r\"{}\"))\n",
-                        msgpack(fig));
-    s += "fig = plt.figure()\n";
-    s += "make_figure(fig, data)";
-    let script = format!("{}\n{}\n", PRELUDE, s);
-    self.file.write_all(script.as_bytes())?;
-
+    self.fig = Some(fig.clone());
     Ok(self)
   }
 }

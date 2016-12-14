@@ -1,11 +1,11 @@
 use scatter::Scatter;
 
-#[derive(Debug, RustcEncodable)]
+#[derive(Debug, Clone, RustcEncodable)]
 pub enum PlotData {
   Scatter(Scatter),
 }
 
-#[derive(Debug, RustcEncodable)]
+#[derive(Debug, Clone, RustcEncodable)]
 pub struct Axes2D {
   plot_data: Vec<PlotData>,
   xlabel: Option<String>,

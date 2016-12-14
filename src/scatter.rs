@@ -1,6 +1,6 @@
 use axes2d::PlotData;
 
-#[derive(Debug, RustcEncodable)]
+#[derive(Debug, Clone, RustcEncodable)]
 pub struct Scatter {
   x: Vec<f64>,
   y: Vec<f64>,
