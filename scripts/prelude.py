@@ -16,7 +16,7 @@ class Scatter(object):
     def __init__(self, data):
         self.x1 = data[0]
         self.x2 = data[1]
-        self.config = ScatterConfig(data[2:])
+        self.config = ScatterConfig(data[2])
 
     def apply(self, ax):
         ax.scatter(self.x1, self.x2, **self.config.as_dict())
@@ -45,7 +45,7 @@ def plot_data(data):
 class Axes2D(object):
     def __init__(self, data):
         self.plot_data = list(map(plot_data, data[0]))
-        self.config = Axes2DConfig(data[1:])
+        self.config = Axes2DConfig(data[1])
 
     def apply(self, ax):
         for p in self.plot_data:

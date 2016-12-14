@@ -10,29 +10,20 @@ pub enum PlotData {
 
 
 /// Represents an instance of `matplotlib.axes.Axes`.
-#[derive(Debug, Clone, RustcEncodable)]
+#[derive(Debug, Clone, Default, RustcEncodable)]
 pub struct Axes2D {
   plot_data: Vec<PlotData>,
+  config: Axes2DConfig,
+}
+
+#[derive(Debug, Clone, Default, RustcEncodable)]
+pub struct Axes2DConfig {
   xlabel: Option<String>,
   ylabel: Option<String>,
   grid: bool,
   legend: Option<String>,
   xlim: Option<(f64, f64)>,
   ylim: Option<(f64, f64)>,
-}
-
-impl Default for Axes2D {
-  fn default() -> Axes2D {
-    Axes2D {
-      plot_data: Vec::new(),
-      xlabel: None,
-      ylabel: None,
-      grid: false,
-      legend: None,
-      xlim: None,
-      ylim: None,
-    }
-  }
 }
 
 impl Axes2D {
@@ -51,19 +42,19 @@ impl Axes2D {
 
   /// set the label text of x axis.
   pub fn xlabel(mut self, text: &str) -> Self {
-    self.xlabel = Some(text.to_owned());
+    self.config.xlabel = Some(text.to_owned());
     self
   }
 
   /// set the label text of y axis.
   pub fn ylabel(mut self, text: &str) -> Self {
-    self.ylabel = Some(text.to_owned());
+    self.config.ylabel = Some(text.to_owned());
     self
   }
 
   /// set whether the grid is shown or not.
   pub fn grid(mut self, enabled: bool) -> Self {
-    self.grid = enabled;
+    self.config.grid = enabled;
     self
   }
 
@@ -71,7 +62,7 @@ impl Axes2D {
   ///
   /// if the value of `loc` is empty, the legend is hidden.
   pub fn legend(mut self, loc: &str) -> Self {
-    self.legend = if loc.trim() != "" {
+    self.config.legend = if loc.trim() != "" {
       Some(loc.to_owned())
     } else {
       None
@@ -81,13 +72,13 @@ impl Axes2D {
 
   /// set the range of x axis.
   pub fn xlim(mut self, lb: f64, ub: f64) -> Self {
-    self.xlim = Some((lb, ub));
+    self.config.xlim = Some((lb, ub));
     self
   }
 
   /// set the range of y axis.
   pub fn ylim(mut self, lb: f64, ub: f64) -> Self {
-    self.ylim = Some((lb, ub));
+    self.config.ylim = Some((lb, ub));
     self
   }
 }

@@ -1,24 +1,17 @@
 use axes2d::PlotData;
 
-#[derive(Debug, Clone, RustcEncodable)]
+#[derive(Debug, Clone, Default, RustcEncodable)]
 pub struct Scatter {
   x: Vec<f64>,
   y: Vec<f64>,
+  config: ScatterConfig,
+}
+
+#[derive(Debug,Clone,Default,RustcEncodable)]
+pub struct ScatterConfig {
   label: Option<String>,
   color: Option<String>,
   marker: Option<String>,
-}
-
-impl Default for Scatter {
-  fn default() -> Scatter {
-    Scatter {
-      x: Vec::new(),
-      y: Vec::new(),
-      label: None,
-      color: None,
-      marker: None,
-    }
-  }
 }
 
 impl Scatter {
@@ -36,17 +29,17 @@ impl Scatter {
   }
 
   pub fn label(mut self, text: &str) -> Self {
-    self.label = Some(text.to_owned());
+    self.config.label = Some(text.to_owned());
     self
   }
 
   pub fn color(mut self, color: &str) -> Self {
-    self.color = Some(color.to_owned());
+    self.config.color = Some(color.to_owned());
     self
   }
 
   pub fn marker(mut self, marker: &str) -> Self {
-    self.marker = Some(marker.to_owned());
+    self.config.marker = Some(marker.to_owned());
     self
   }
 }
