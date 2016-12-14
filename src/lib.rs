@@ -8,7 +8,6 @@ mod scatter;
 
 // re-exports
 pub mod backend;
-pub mod encode;
 pub use axes2d::{Axes2D, PlotData};
 pub use backend::Backend;
 pub use figure::Figure;
