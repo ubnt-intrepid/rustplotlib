@@ -31,13 +31,8 @@ fn main() {
     .grid(true));
 
   apply_mpl(&fig, "scatter.png").unwrap();
-
-  backend::MatplotlibFile::new("scatter.py")
-    .unwrap()
-    .evaluate(&fig)
-    .unwrap()
-    .flush()
-    .unwrap();
+  apply_mpl_file(&fig, "scatter.py").unwrap();
+  apply_mpl_native(&fig, "scatter_native.png").unwrap();
 }
 
 fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
@@ -46,4 +41,15 @@ fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
     .evaluate(fig)?
     .exec(format!("fig.savefig('{}')", filename))?
     .wait()
+}
+
+fn apply_mpl_file(fig: &Figure, filename: &str) -> std::io::Result<()> {
+  let mut mp = backend::MatplotlibFile::new(filename)?;
+  mp.evaluate(fig)?
+    .flush()
+}
+
+fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
+  let mut mp = backend::MatplotlibNative::new();
+  mp.evaluate(fig).and(Ok(()))
 }
