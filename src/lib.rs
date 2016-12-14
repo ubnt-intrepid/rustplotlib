@@ -5,6 +5,7 @@ extern crate rmp_serialize;
 mod axes2d;
 mod figure;
 mod scatter;
+mod util;
 
 // re-exports
 pub mod backend;

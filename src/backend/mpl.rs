@@ -2,7 +2,7 @@ use std::io::{self, Write};
 use std::process::{Command, Child, Stdio};
 use backend::Backend;
 use figure::Figure;
-use super::msgpack;
+use util::msgpack;
 
 const PRELUDE: &'static str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
                                                    "/scripts/prelude.py"));
