@@ -30,16 +30,7 @@ fn main() {
     .ylabel("Distance [mm]")
     .grid(true));
 
-  backend::Matplotlib::new()
-    .unwrap()
-    .exec("plt.style.use('ggplot')")
-    .unwrap()
-    .evaluate(&fig)
-    .unwrap()
-    .exec("fig.savefig('result.png')")
-    .unwrap()
-    .wait()
-    .unwrap();
+  apply_mpl(&fig, "result.png").unwrap();
 
   // backend::MatplotlibFile::new("report.py")
   //   .unwrap()
@@ -47,4 +38,12 @@ fn main() {
   //   .unwrap()
   //   .flush()
   //   .unwrap();
+}
+
+fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
+  let mut mp = backend::Matplotlib::new()?;
+  mp.exec("plt.style.use('ggplot')")?
+    .evaluate(fig)?
+    .exec(format!("fig.savefig('{}')", filename))?
+    .wait()
 }
