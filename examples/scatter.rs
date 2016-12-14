@@ -1,34 +1,26 @@
 extern crate rustplotlib;
-extern crate rand;
 
 use rustplotlib::{backend, Backend};
 use rustplotlib::{Figure, Axes2D, Scatter};
-
-use rand::distributions::{Range, IndependentSample};
+use std::f64::consts::PI;
 
 fn main() {
-  let mut rng = rand::thread_rng();
-  let uniform = Range::new(0.0, 1.0);
-
-  let x1: Vec<f64> = (0..100).into_iter().map(Into::into).collect();
-  let x2: Vec<f64> = (0..100).into_iter().map(|_| uniform.ind_sample(&mut rng)).collect();
+  let x: Vec<f64> = (0..30).into_iter().map(|i| (i as f64) * 0.08 * PI).collect();
+  let y1: Vec<f64> = x.iter().map(|x| x.sin()).collect();
+  let y2: Vec<f64> = x.iter().map(|x| x.cos()).collect();
 
   let fig = Figure::new().axes2d(Axes2D::new()
-    .add(Scatter::new()
-      .data(x1.iter().take(50).cloned().collect(),
-            x2.iter().take(50).cloned().collect())
-      .label("Red")
-      .marker("o")
-      .color("red"))
-    .add(Scatter::new()
-      .data(x1.iter().skip(50).cloned().collect(),
-            x2.iter().skip(50).cloned().collect())
-      .label("Blue")
-      .marker("x")
-      .color("blue"))
+    .add(Scatter::new("sin(x)")
+      .data(&x[..], y1)
+      .marker("o"))
+    .add(Scatter::new("cos(x)")
+      .data(&x[..], y2)
+      .marker("x"))
     .xlabel("Time [sec]")
     .ylabel("Distance [mm]")
-    .grid(true));
+    .legend("upper right")
+    .xlim(0.0, 8.0)
+    .ylim(-2.0, 2.0));
 
   apply_mpl(&fig, "scatter.png").unwrap();
   apply_mpl_file(&fig, "scatter.py").unwrap();

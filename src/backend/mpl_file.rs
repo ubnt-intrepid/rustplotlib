@@ -10,10 +10,6 @@ use util::msgpack;
 const PRELUDE: &'static str =
   include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/scripts/prelude.py"));
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
-const MAIN: &'static str =
-  include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/scripts/main.py"));
-
 
 /// Matplotlib backend for saving to the file.
 pub struct MatplotlibFile {
@@ -38,7 +34,10 @@ impl MatplotlibFile {
       .open(&self.path)?;
 
     file.write_all(PRELUDE.as_bytes())?;
-    file.write_all(MAIN.as_bytes())?;
+    file.write_all(r#"
+if __name__ == '__main__':
+    main()"#
+        .as_bytes())?;
 
     file.write_all(b"\n#==>\n#")?;
     if let Some(ref fig) = self.fig {

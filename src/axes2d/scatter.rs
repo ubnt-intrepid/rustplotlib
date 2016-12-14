@@ -5,24 +5,33 @@ pub struct Scatter {
   x: Vec<f64>,
   y: Vec<f64>,
   label: Option<String>,
-  color: String,
-  marker: String,
+  color: Option<String>,
+  marker: Option<String>,
 }
 
-impl Scatter {
-  pub fn new() -> Scatter {
+impl Default for Scatter {
+  fn default() -> Scatter {
     Scatter {
       x: Vec::new(),
       y: Vec::new(),
       label: None,
-      color: "blue".to_owned(),
-      marker: "o".to_owned(),
+      color: None,
+      marker: None,
     }
   }
+}
 
-  pub fn data(mut self, x: Vec<f64>, y: Vec<f64>) -> Self {
-    self.x = x;
-    self.y = y;
+impl Scatter {
+  pub fn new(name: &str) -> Scatter {
+    Scatter::default().label(name)
+  }
+
+  pub fn data<X, Y>(mut self, x: X, y: Y) -> Self
+    where X: Into<Vec<f64>>,
+          Y: Into<Vec<f64>>
+  {
+    self.x = x.into();
+    self.y = y.into();
     self
   }
 
@@ -32,12 +41,12 @@ impl Scatter {
   }
 
   pub fn color(mut self, color: &str) -> Self {
-    self.color = color.to_owned();
+    self.color = Some(color.to_owned());
     self
   }
 
   pub fn marker(mut self, marker: &str) -> Self {
-    self.marker = marker.to_owned();
+    self.marker = Some(marker.to_owned());
     self
   }
 }

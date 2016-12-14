@@ -8,9 +8,14 @@ import matplotlib.pyplot as plt
 tgbegin = '\n#==>\n#'.encode()
 tgend   = '\n#<==\n'.encode()
 
+def str_decode(s):
+    if s is None:
+        return None
+    return s.decode('utf-8')
+
 def plot_scatter(ax, data):
     x1, x2 = data[0:2]
-    l, c, m = map(lambda s: s.decode('utf-8'), data[2:5])
+    l, c, m = map(str_decode, data[2:5])
     ax.scatter(x1, x2, label=l, color=c, marker=m)
 
 def make_plot(ax, data):
@@ -21,15 +26,25 @@ def make_plot(ax, data):
 
 def make_axes(ax, data):
     plot   = data[0]
-    xlabel = data[1].decode('utf-8')
-    ylabel = data[2].decode('utf-8')
+    xlabel = str_decode(data[1])
+    ylabel = str_decode(data[2])
     grid   = data[3]
+    legend = str_decode(data[4])
+    xlim   = data[5]
+    ylim   = data[6]
     for p in plot:
         make_plot(ax, p)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
+    if xlabel:
+        ax.set_xlabel(xlabel)
+    if ylabel:
+        ax.set_ylabel(ylabel)
     ax.grid(grid)
-    ax.legend(loc='upper left')
+    if legend:
+        ax.legend(loc=legend)
+    if xlim:
+        ax.set_xlim(xlim)
+    if ylim:
+        ax.set_ylim(ylim)
 
 def make_figure(fig, data):
     # TODO: support for multiple subplots
@@ -54,3 +69,8 @@ def evaluate(data):
     fig = plt.figure()
     make_figure(fig, data)
     return fig
+
+def main():
+    fig = plt.figure()
+    make_figure(fig, read_data())
+    fig.savefig('result.png')
