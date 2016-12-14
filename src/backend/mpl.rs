@@ -4,8 +4,9 @@ use backend::Backend;
 use figure::Figure;
 use util::msgpack;
 
-const PRELUDE: &'static str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
-                                                   "/scripts/prelude.py"));
+#[cfg_attr(rustfmt, rustfmt_skip)]
+const PRELUDE: &'static str =
+  include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/scripts/prelude.py"));
 
 /// Represents an instance of Python process which executes operations.
 pub struct Matplotlib {
