@@ -13,44 +13,80 @@ def str_decode(s):
         return None
     return s.decode('utf-8')
 
-def plot_scatter(ax, data):
-    x1, x2 = data[0:2]
-    l, c, m = map(str_decode, data[2:5])
-    ax.scatter(x1, x2, label=l, color=c, marker=m)
 
-def make_plot(ax, data):
-    plot_type, data = data
-    if plot_type == 0: # scatter
-        data = data[0]
-        plot_scatter(ax, data)
+class Scatter(object):
+    def __init__(self, data):
+        self.x1 = data[0]
+        self.x2 = data[1]
+        self.config = ScatterConfig(data[2:])
 
-def make_axes(ax, data):
-    plot   = data[0]
-    xlabel = str_decode(data[1])
-    ylabel = str_decode(data[2])
-    grid   = data[3]
-    legend = str_decode(data[4])
-    xlim   = data[5]
-    ylim   = data[6]
-    for p in plot:
-        make_plot(ax, p)
-    if xlabel:
-        ax.set_xlabel(xlabel)
-    if ylabel:
-        ax.set_ylabel(ylabel)
-    ax.grid(grid)
-    if legend:
-        ax.legend(loc=legend)
-    if xlim:
-        ax.set_xlim(xlim)
-    if ylim:
-        ax.set_ylim(ylim)
+    def apply(self, ax):
+        ax.scatter(self.x1, self.x2, **self.config.as_dict())
 
-def make_figure(fig, data):
-    # TODO: support for multiple subplots
-    data = data[0]
-    ax = fig.add_subplot(1, 1, 1)
-    make_axes(ax, data)
+class ScatterConfig(object):
+    def __init__(self, data):
+        self.l = str_decode(data[0])
+        self.c = str_decode(data[1])
+        self.m = str_decode(data[2])
+
+    def as_dict(self):
+        return dict(label=self.l, color=self.c, marker=self.m)
+
+
+def plot_data(data):
+    if data[0] == 0: # scatter
+        return Scatter(data[1][0])
+    else:
+        return None
+
+
+class Axes2DConfig(object):
+    def __init__(self, data):
+        self.xlabel = str_decode(data[0])
+        self.ylabel = str_decode(data[1])
+        self.grid   = data[2]
+        self.legend = str_decode(data[3])
+        self.xlim   = data[4]
+        self.ylim   = data[5]
+
+    def apply(self, ax):
+        if self.xlabel:
+            ax.set_xlabel(self.xlabel)
+        if self.ylabel:
+            ax.set_ylabel(self.ylabel)
+        ax.grid(self.grid)
+        if self.legend:
+            ax.legend(loc=self.legend)
+        if self.xlim:
+            ax.set_xlim(self.xlim)
+        if self.ylim:
+            ax.set_ylim(self.ylim)
+
+
+class Axes2D(object):
+    def __init__(self, ax, data):
+        self.ax = ax
+        self.plot_data = list(map(plot_data, data[0]))
+        self.config    = Axes2DConfig(data[1:])
+
+    def apply(self):
+        for p in self.plot_data:
+            p.apply(self.ax)
+        self.config.apply(self.ax)
+
+
+class Figure(object):
+    def __init__(self, fig, data):
+        # TODO: support for multiple subplots
+        self.fig = fig
+        self.axes = Axes2D(self.fig.add_subplot(1, 1, 1), data[0])
+
+    def apply(self):
+        self.axes.apply()
+
+    def savefig(self, *args, **kwargs):
+        self.fig.savefig(*args, **kwargs)
+
 
 def read_data():
     try:
@@ -61,16 +97,16 @@ def read_data():
         data = data[data.find(tgbegin) + len(tgbegin) : data.find(tgend)]
     except NameError:
         data = sys.stdin.buffer.read()
-
     return msgpack.unpackb(base64.b64decode(data))
 
 def evaluate(data):
     data = msgpack.unpackb(base64.b64decode(data))
-    fig = plt.figure()
-    make_figure(fig, data)
+    fig = Figure(plt.figure(), data)
+    fig.apply()
     return fig
 
 def main():
-    fig = plt.figure()
-    make_figure(fig, read_data())
+    data = read_data()
+    fig = Figure(plt.figure(), data)
+    fig.apply()
     fig.savefig('result.png')
