@@ -1,5 +1,4 @@
 use axes2d::PlotData;
-use encode::{Encoder, EncodeResult, Encodable};
 
 #[derive(Debug, RustcEncodable)]
 pub struct Scatter {
@@ -43,15 +42,8 @@ impl Scatter {
   }
 }
 
-impl PlotData for Scatter {
-  fn plot_type(&self) -> &'static str {
-    "scatter"
-  }
-}
-
-impl Encodable for Scatter {
-  fn encode(&self, s: &mut Encoder) -> EncodeResult {
-    use rustc_serialize::Encodable;
-    Encodable::encode(self, s)
+impl Into<PlotData> for Scatter {
+  fn into(self) -> PlotData {
+    PlotData::Scatter(self)
   }
 }

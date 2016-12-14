@@ -21,8 +21,8 @@ def plot_scatter(ax, data):
 
 def make_plot(ax, data):
     plot_type, data = data
-    plot_type = plot_type.decode('utf-8')
-    if plot_type == "scatter":
+    if plot_type == 0: # scatter
+        data = data[0]
         plot_scatter(ax, data)
 
 def make_axes(ax, data):
@@ -39,6 +39,7 @@ def make_axes(ax, data):
 
 def make_figure(fig, data):
     # TODO: support for multiple subplots
+    data = data[0]
     ax = fig.add_subplot(1, 1, 1)
     make_axes(ax, data)
 "#;
@@ -84,7 +85,8 @@ impl Drop for Matplotlib {
 }
 
 fn to_script(fig: &Figure) -> String {
-  use encode::{Encodable, Encoder};
+  use rmp_serialize::Encoder;
+  use rustc_serialize::Encodable;
   let mut buf = Vec::new();
   fig.encode(&mut Encoder::new(&mut buf)).unwrap();
   let data = buf.to_base64(base64::STANDARD);
