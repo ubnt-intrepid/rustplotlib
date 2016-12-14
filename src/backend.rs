@@ -8,45 +8,22 @@ use rustc_serialize::base64::{self, ToBase64};
 
 use figure::Figure;
 
-const PRELUDE: &'static str = r#"#!/usr/bin/env python
+const PRELUDE: &'static str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
+                                                   "/scripts/prelude.py"));
 
-import base64
-import msgpack
-import matplotlib.pyplot as plt
+fn msgpack(fig: &Figure) -> String {
+  use rmp_serialize::Encoder;
+  use rustc_serialize::Encodable;
+  let mut buf = Vec::new();
+  fig.encode(&mut Encoder::new(&mut buf)).unwrap();
+  buf.to_base64(base64::STANDARD)
+}
 
-def plot_scatter(ax, data):
-    x1, x2 = data[0:2]
-    l, c, m = map(lambda s: s.decode('utf-8'), data[2:5])
-    ax.scatter(x1, x2, label=l, color=c, marker=m)
-
-def make_plot(ax, data):
-    plot_type, data = data
-    if plot_type == 0: # scatter
-        data = data[0]
-        plot_scatter(ax, data)
-
-def make_axes(ax, data):
-    plot   = data[0]
-    xlabel = data[1].decode('utf-8')
-    ylabel = data[2].decode('utf-8')
-    grid   = data[3]
-    for p in plot:
-        make_plot(ax, p)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.grid(grid)
-    ax.legend(loc='upper left')
-
-def make_figure(fig, data):
-    # TODO: support for multiple subplots
-    data = data[0]
-    ax = fig.add_subplot(1, 1, 1)
-    make_axes(ax, data)
-"#;
 
 pub trait Backend {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self>;
 }
+
 
 pub struct Matplotlib {
   child: Child,
@@ -72,8 +49,13 @@ impl Matplotlib {
 
 impl Backend for Matplotlib {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    let script = to_script(fig);
-    self.child.stdin.as_mut().unwrap().write_all(script.as_bytes())?;
+    {
+      let ref mut stdin = self.child.stdin.as_mut().unwrap();
+      stdin.write_all(format!("data = r\"{}\"\n", msgpack(fig)).as_bytes())?;
+      stdin.write_all(b"data = msgpack.unpackb(base64.b64decode(data)\n")?;
+      stdin.write_all(b"fig = plt.figure()\n")?;
+      stdin.write_all(b"make_figure(fig, data)\n")?;
+    }
     Ok(self)
   }
 }
@@ -84,18 +66,6 @@ impl Drop for Matplotlib {
   }
 }
 
-fn to_script(fig: &Figure) -> String {
-  use rmp_serialize::Encoder;
-  use rustc_serialize::Encodable;
-  let mut buf = Vec::new();
-  fig.encode(&mut Encoder::new(&mut buf)).unwrap();
-  let data = buf.to_base64(base64::STANDARD);
-
-  let mut s = format!("data = msgpack.unpackb(base64.b64decode(r\"{}\"))\n", data);
-  s += "fig = plt.figure()\n";
-  s += "make_figure(fig, data)";
-  s
-}
 
 #[allow(dead_code)]
 pub struct MatplotlibNative {
@@ -118,6 +88,7 @@ impl Backend for MatplotlibNative {
   }
 }
 
+
 pub struct MatplotlibFile {
   file: File,
 }
@@ -134,7 +105,11 @@ impl MatplotlibFile {
 
 impl Backend for MatplotlibFile {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    let script = format!("{}\n{}\n", PRELUDE, to_script(&fig));
+    let mut s = format!("data = msgpack.unpackb(base64.b64decode(r\"{}\"))\n",
+                        msgpack(fig));
+    s += "fig = plt.figure()\n";
+    s += "make_figure(fig, data)";
+    let script = format!("{}\n{}\n", PRELUDE, s);
     self.file.write_all(script.as_bytes())?;
 
     Ok(self)
