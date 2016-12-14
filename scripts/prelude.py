@@ -25,12 +25,16 @@ class Scatter(object):
 
 class ScatterConfig(object):
     def __init__(self, data):
-        self.l = str_decode(data[0])
-        self.c = str_decode(data[1])
-        self.m = str_decode(data[2])
+        self.label  = str_decode(data[0])
+        self.color  = str_decode(data[1])
+        self.marker = str_decode(data[2])
 
     def as_dict(self):
-        return dict(label=self.l, color=self.c, marker=self.m)
+        return dict(
+            label=self.label,
+            color=self.color,
+            marker=self.marker,
+        )
 
 
 def plot_data(data):
@@ -39,6 +43,16 @@ def plot_data(data):
     else:
         return None
 
+
+class Axes2D(object):
+    def __init__(self, data):
+        self.plot_data = list(map(plot_data, data[0]))
+        self.config = Axes2DConfig(data[1:])
+
+    def apply(self, ax):
+        for p in self.plot_data:
+            p.apply(ax)
+        self.config.apply(ax)
 
 class Axes2DConfig(object):
     def __init__(self, data):
@@ -63,50 +77,34 @@ class Axes2DConfig(object):
             ax.set_ylim(self.ylim)
 
 
-class Axes2D(object):
-    def __init__(self, ax, data):
-        self.ax = ax
-        self.plot_data = list(map(plot_data, data[0]))
-        self.config    = Axes2DConfig(data[1:])
-
-    def apply(self):
-        for p in self.plot_data:
-            p.apply(self.ax)
-        self.config.apply(self.ax)
-
-
 class Figure(object):
-    def __init__(self, fig, data):
+    def __init__(self, data):
         # TODO: support for multiple subplots
-        self.fig = fig
-        self.axes = Axes2D(self.fig.add_subplot(1, 1, 1), data[0])
+        self.axes = Axes2D(data[0])
 
-    def apply(self):
-        self.axes.apply()
-
-    def savefig(self, *args, **kwargs):
-        self.fig.savefig(*args, **kwargs)
+    def apply(self, fig):
+        ax = fig.add_subplot(1, 1, 1)
+        self.axes.apply(ax)
 
 
-def read_data():
-    try:
-        fname = __file__
-        if fname.endswith('.pyc'):
-            fname = fname[0:-1]
-        data = open(fname, 'rb').read()
-        data = data[data.find(tgbegin) + len(tgbegin) : data.find(tgend)]
-    except NameError:
-        data = sys.stdin.buffer.read()
+def read_data(data=None):
+    if not data:
+        try:
+            fname = __file__
+            if fname.endswith('.pyc'):
+                fname = fname[0:-1]
+            data = open(fname, 'rb').read()
+            data = data[data.find(tgbegin) + len(tgbegin) : data.find(tgend)]
+        except NameError:
+            data = sys.stdin.buffer.read()
     return msgpack.unpackb(base64.b64decode(data))
 
 def evaluate(data):
-    data = msgpack.unpackb(base64.b64decode(data))
-    fig = Figure(plt.figure(), data)
-    fig.apply()
+    figure = Figure(read_data(data))
+    fig = plt.figure()
+    figure.apply(fig)
     return fig
 
 def main():
-    data = read_data()
-    fig = Figure(plt.figure(), data)
-    fig.apply()
+    fig = evaluate(None)
     fig.savefig('result.png')
