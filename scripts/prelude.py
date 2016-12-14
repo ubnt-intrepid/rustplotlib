@@ -5,8 +5,6 @@ import msgpack
 import sys
 import matplotlib.pyplot as plt
 
-tgbegin = '\n#==>\n#'.encode()
-tgend   = '\n#<==\n'.encode()
 
 def str_decode(s):
     if s is None:
@@ -87,7 +85,13 @@ class Figure(object):
         self.axes.apply(ax)
 
 
-def read_data(data=None):
+def unpack(data=None):
+    """
+    Returns unpacked data from string.
+    If `data` is None, it will collect packed data from the footer of script, or standard input.
+    """
+    tgbegin = '\n#==>\n#'.encode()
+    tgend   = '\n#<==\n'.encode()
     if not data:
         try:
             fname = __file__
@@ -100,9 +104,23 @@ def read_data(data=None):
     return msgpack.unpackb(base64.b64decode(data))
 
 def evaluate(data):
-    figure = Figure(read_data(data))
+    """
+    Create a figure object and apply all operations.
+
+    Arguments:
+      data:
+        Packed data which contains all of operations applied to `matplotlib.figure.Figure`.
+        If `data` is a `str`, it will be unpacked by using `unpack()`.
+    
+    Returns:
+      The instance of `matplotlib.figure.Figure` which applied all operations.
+    """
+    if data is None:
+        data = unpack()
+    elif isinstance(data, str):
+        data = unpack(data)
     fig = plt.figure()
-    figure.apply(fig)
+    Figure(data).apply(fig)
     return fig
 
 def main():
