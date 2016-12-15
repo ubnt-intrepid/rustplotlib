@@ -43,7 +43,7 @@ impl Matplotlib {
   }
 }
 
-impl Backend for Matplotlib {
+impl<'a> Backend<'a> for Matplotlib {
   /// replace the instance which named 'fig' to a new Figure.
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
     self.exec(format!(r#"fig = evaluate(r"{}")"#, msgpack(fig)))?;

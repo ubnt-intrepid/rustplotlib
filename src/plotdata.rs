@@ -1,13 +1,17 @@
-use axes2d::PlotData;
+/// Plot type.
+#[derive(Debug, RustcEncodable)]
+pub enum PlotData {
+  Scatter(Scatter),
+}
 
-#[derive(Debug, Clone, Default, RustcEncodable)]
+#[derive(Debug, Default, RustcEncodable)]
 pub struct Scatter {
   x: Vec<f64>,
   y: Vec<f64>,
   config: ScatterConfig,
 }
 
-#[derive(Debug,Clone,Default,RustcEncodable)]
+#[derive(Debug, Default, RustcEncodable)]
 pub struct ScatterConfig {
   label: Option<String>,
   color: Option<String>,
@@ -44,8 +48,8 @@ impl Scatter {
   }
 }
 
-impl Into<PlotData> for Scatter {
-  fn into(self) -> PlotData {
-    PlotData::Scatter(self)
+impl From<Scatter> for PlotData {
+  fn from(data: Scatter) -> PlotData {
+    PlotData::Scatter(data)
   }
 }

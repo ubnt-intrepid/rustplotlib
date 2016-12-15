@@ -12,14 +12,14 @@ const PRELUDE: &'static str =
 
 
 /// Matplotlib backend for saving to the file.
-pub struct MatplotlibFile {
+pub struct MatplotlibFile<'a> {
   path: PathBuf,
-  fig: Option<Figure>,
+  fig: Option<&'a Figure>,
 }
 
-impl MatplotlibFile {
+impl<'a> MatplotlibFile<'a> {
   /// create an instance of MatplotlibFile backend.
-  pub fn new<P: AsRef<Path>>(path: P) -> io::Result<MatplotlibFile> {
+  pub fn new<P: AsRef<Path>>(path: P) -> io::Result<MatplotlibFile<'a>> {
     Ok(MatplotlibFile {
       path: path.as_ref().to_path_buf(),
       fig: None,
@@ -49,10 +49,10 @@ if __name__ == '__main__':
   }
 }
 
-impl Backend for MatplotlibFile {
+impl<'a> Backend<'a> for MatplotlibFile<'a> {
   /// replace the internal data of figure.
-  fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
-    self.fig = Some(fig.clone());
+  fn evaluate(&'a mut self, fig: &'a Figure) -> io::Result<&'a mut Self> {
+    self.fig = Some(fig);
     Ok(self)
   }
 }

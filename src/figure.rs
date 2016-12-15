@@ -1,15 +1,9 @@
 use axes2d::Axes2D;
 
 /// Represents an instance of `matplotlib.figure.Figure`.
-#[derive(Debug, Clone, RustcEncodable)]
+#[derive(Debug, Default, RustcEncodable)]
 pub struct Figure {
   axes: Option<Axes2D>,
-}
-
-impl Default for Figure {
-  fn default() -> Figure {
-    Figure { axes: None }
-  }
 }
 
 impl Figure {

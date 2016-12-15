@@ -1,22 +1,13 @@
-mod scatter;
-pub use self::scatter::Scatter;
-
-
-/// Plot type.
-#[derive(Debug, Clone, RustcEncodable)]
-pub enum PlotData {
-  Scatter(Scatter),
-}
-
+use plotdata::PlotData;
 
 /// Represents an instance of `matplotlib.axes.Axes`.
-#[derive(Debug, Clone, Default, RustcEncodable)]
+#[derive(Debug, Default, RustcEncodable)]
 pub struct Axes2D {
   plot_data: Vec<PlotData>,
   config: Axes2DConfig,
 }
 
-#[derive(Debug, Clone, Default, RustcEncodable)]
+#[derive(Debug, Default, RustcEncodable)]
 pub struct Axes2DConfig {
   xlabel: Option<String>,
   ylabel: Option<String>,
