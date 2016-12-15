@@ -113,23 +113,25 @@ class Figure(object):
         ax = fig.add_subplot(1, 1, 1)
         self.axes.apply(ax)
 
-
-def unpack(data=None):
-    """
-    Returns unpacked data from string.
-    If `data` is None, it will collect packed data from the footer of script, or standard input.
-    """
+def read_data():
     tgbegin = '\n#==>\n#'.encode()
     tgend   = '\n#<==\n'.encode()
-    if not data:
-        try:
-            fname = __file__
-            if fname.endswith('.pyc'):
-                fname = fname[0:-1]
-            data = open(fname, 'rb').read()
-            data = data[data.find(tgbegin) + len(tgbegin) : data.find(tgend)]
-        except NameError:
-            data = sys.stdin.buffer.read()
+    data = None
+    try:
+        fname = __file__
+        if fname.endswith('.pyc'):
+            fname = fname[0:-1]
+        data = open(fname, 'rb').read()
+        data = data[data.find(tgbegin) + len(tgbegin) : data.find(tgend)]
+    except NameError:
+        data = sys.stdin.buffer.read()
+    finally:
+        return data
+
+def unpack(data):
+    """
+    Returns unpacked data from string.
+    """
     return msgpack.unpackb(base64.b64decode(data))
 
 def evaluate(data):
@@ -140,13 +142,13 @@ def evaluate(data):
       data:
         Packed data which contains all of operations applied to `matplotlib.figure.Figure`.
         If `data` is a `str`, it will be unpacked by using `unpack()`.
-    
+
     Returns:
       The instance of `matplotlib.figure.Figure` which applied all operations.
     """
     if data is None:
-        data = unpack()
-    elif isinstance(data, str):
+        data = read_data()
+    if isinstance(data, str):
         data = unpack(data)
     fig = plt.figure()
     Figure(data).apply(fig)
