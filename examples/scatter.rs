@@ -1,7 +1,7 @@
 extern crate rustplotlib;
 
 use rustplotlib::{backend, Backend};
-use rustplotlib::{Figure, Axes2D, Scatter, Plot};
+use rustplotlib::{Figure, Axes2D, Scatter, Line2D};
 use std::f64::consts::PI;
 
 fn main() {
@@ -13,7 +13,7 @@ fn main() {
     .add(Scatter::new("sin(x)")
       .data(&x, &y1)
       .marker("o"))
-    .add(Plot::new("cos(x)")
+    .add(Line2D::new("cos(x)")
       .data(&x, &y2)
       .color("red")
       .marker("x")

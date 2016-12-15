@@ -77,7 +77,7 @@ impl<'a> Axes2D<'a> {
 #[derive(Debug, RustcEncodable)]
 pub enum PlotData<'a> {
   Scatter(Scatter<'a>),
-  Plot(Plot<'a>),
+  Line2D(Line2D<'a>),
 }
 
 #[derive(Debug, Default, RustcEncodable)]
@@ -129,14 +129,14 @@ impl<'a> From<Scatter<'a>> for PlotData<'a> {
 
 
 #[derive(Debug, Default, RustcEncodable)]
-pub struct Plot<'a> {
+pub struct Line2D<'a> {
   x: &'a [f64],
   y: &'a [f64],
-  config: PlotConfig,
+  config: Line2DConfig,
 }
 
 #[derive(Debug, Default, RustcEncodable)]
-pub struct PlotConfig {
+pub struct Line2DConfig {
   label: Option<String>,
   color: Option<String>,
   marker: Option<String>,
@@ -144,9 +144,9 @@ pub struct PlotConfig {
   linewidth: Option<f64>,
 }
 
-impl<'a> Plot<'a> {
-  pub fn new(name: &str) -> Plot<'a> {
-    Plot::default().label(name)
+impl<'a> Line2D<'a> {
+  pub fn new(name: &str) -> Line2D<'a> {
+    Line2D::default().label(name)
   }
 
   pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
@@ -181,8 +181,8 @@ impl<'a> Plot<'a> {
   }
 }
 
-impl<'a> From<Plot<'a>> for PlotData<'a> {
-  fn from(data: Plot<'a>) -> PlotData<'a> {
-    PlotData::Plot(data)
+impl<'a> From<Line2D<'a>> for PlotData<'a> {
+  fn from(data: Line2D<'a>) -> PlotData<'a> {
+    PlotData::Line2D(data)
   }
 }
