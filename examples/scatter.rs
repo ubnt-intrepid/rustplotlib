@@ -1,4 +1,6 @@
 extern crate rustplotlib;
+#[cfg(feature = "native")]
+extern crate cpython;
 
 use rustplotlib::{backend, Backend};
 use rustplotlib::{Figure, Axes2D, Scatter, Line2D};
@@ -49,8 +51,8 @@ fn apply_mpl_file(fig: &Figure, filename: &str) -> std::io::Result<()> {
 #[cfg(feature = "native")]
 fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
   let mut mp = backend::MatplotlibNative::new();
-  mp.exec("plt.style.use('dark_background')");
-  mp.evaluate(fig)?
-    .exec(format!("plt.savefig('{}')", filename));
+  mp.set_stylesheet("dark_background")?
+    .evaluate(fig)?
+    .savefig(filename)?;
   Ok(())
 }
