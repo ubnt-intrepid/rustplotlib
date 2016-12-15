@@ -93,6 +93,18 @@ pub trait Backend<'a> {
     code += ")";
     self.exec(code)
   }
+
+  fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self> {
+    self.exec(format!("plt.style.use('{}')", stylename))
+  }
+
+  fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
+    self.exec(format!("plt.savefig('{}')", filename))
+  }
+
+  fn show(&mut self) -> io::Result<&mut Self> {
+    self.exec("plt.show()")
+  }
 }
 
 fn to_pyvec(data: &[f64]) -> String {

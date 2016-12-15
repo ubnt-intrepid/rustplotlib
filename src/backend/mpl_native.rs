@@ -17,8 +17,15 @@ impl MatplotlibNative {
   pub fn python<'a>(&'a self) -> Python<'a> {
     self.gil.python()
   }
+}
 
-  pub fn set_stylesheet(&mut self, stylename: &str) -> io::Result<&mut Self> {
+impl<'a> Backend<'a> for MatplotlibNative {
+  fn exec<S: AsRef<str>>(&mut self, script: S) -> io::Result<&mut Self> {
+    self.gil.python().run(script.as_ref(), None, None).unwrap();
+    Ok(self)
+  }
+
+  fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self> {
     {
       use cpython::FromPyObject;
       let py = self.python();
@@ -29,7 +36,7 @@ impl MatplotlibNative {
     Ok(self)
   }
 
-  pub fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
+  fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
     {
       let py = self.python();
       let plt = PyModule::import(py, "matplotlib.pyplot").unwrap();
@@ -38,19 +45,12 @@ impl MatplotlibNative {
     Ok(self)
   }
 
-  pub fn show(&mut self) -> io::Result<&mut Self> {
+  fn show(&mut self) -> io::Result<&mut Self> {
     {
       let py = self.python();
       let plt = PyModule::import(py, "matplotlib.pyplot").unwrap();
       plt.call(py, "show", PyTuple::empty(py), None).unwrap();
     }
-    Ok(self)
-  }
-}
-
-impl<'a> Backend<'a> for MatplotlibNative {
-  fn exec<S: AsRef<str>>(&mut self, script: S) -> io::Result<&mut Self> {
-    self.gil.python().run(script.as_ref(), None, None).unwrap();
     Ok(self)
   }
 }

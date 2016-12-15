@@ -43,7 +43,7 @@ fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
 #[cfg(feature = "native")]
 fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
   let mut mp = backend::MatplotlibNative::new();
-  mp.set_stylesheet("dark_background")?
+  mp.set_style("dark_background")?
     .evaluate(fig)?
     .savefig(filename)?;
   Ok(())

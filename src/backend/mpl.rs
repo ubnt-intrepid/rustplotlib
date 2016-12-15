@@ -21,14 +21,6 @@ impl Matplotlib {
     Ok(mpl)
   }
 
-  pub fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self> {
-    self.exec(format!("plt.style.use('{}')", stylename))
-  }
-
-  pub fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
-    self.exec(format!("plt.savefig('{}')", filename))
-  }
-
   /// wait until all operations are finished.
   pub fn wait(&mut self) -> io::Result<()> {
     self.child.wait().and(Ok(()))
