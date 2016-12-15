@@ -1,12 +1,10 @@
+use std::io;
+use backend::Backend;
+
 /// Represents an instance of `matplotlib.axes.Axes`.
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct Axes2D<'a> {
   plot_data: Vec<PlotData<'a>>,
-  config: Axes2DConfig,
-}
-
-#[derive(Debug, Default, RustcEncodable)]
-pub struct Axes2DConfig {
   xlabel: Option<String>,
   ylabel: Option<String>,
   grid: bool,
@@ -31,19 +29,19 @@ impl<'a> Axes2D<'a> {
 
   /// set the label text of x axis.
   pub fn xlabel(mut self, text: &str) -> Self {
-    self.config.xlabel = Some(text.to_owned());
+    self.xlabel = Some(text.to_owned());
     self
   }
 
   /// set the label text of y axis.
   pub fn ylabel(mut self, text: &str) -> Self {
-    self.config.ylabel = Some(text.to_owned());
+    self.ylabel = Some(text.to_owned());
     self
   }
 
   /// set whether the grid is shown or not.
   pub fn grid(mut self, enabled: bool) -> Self {
-    self.config.grid = enabled;
+    self.grid = enabled;
     self
   }
 
@@ -51,7 +49,7 @@ impl<'a> Axes2D<'a> {
   ///
   /// if the value of `loc` is empty, the legend is hidden.
   pub fn legend(mut self, loc: &str) -> Self {
-    self.config.legend = if loc.trim() != "" {
+    self.legend = if loc.trim() != "" {
       Some(loc.to_owned())
     } else {
       None
@@ -61,34 +59,55 @@ impl<'a> Axes2D<'a> {
 
   /// set the range of x axis.
   pub fn xlim(mut self, lb: f64, ub: f64) -> Self {
-    self.config.xlim = Some((lb, ub));
+    self.xlim = Some((lb, ub));
     self
   }
 
   /// set the range of y axis.
   pub fn ylim(mut self, lb: f64, ub: f64) -> Self {
-    self.config.ylim = Some((lb, ub));
+    self.ylim = Some((lb, ub));
     self
+  }
+
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    for ref plot in &self.plot_data {
+      plot.apply(mpl)?;
+    }
+    mpl.grid(self.grid)?;
+    if let Some(ref loc) = self.legend {
+      mpl.legend(loc)?;
+    }
+    if let Some(ref xlim) = self.xlim {
+      mpl.xlim(xlim)?;
+    }
+    if let Some(ref ylim) = self.ylim {
+      mpl.ylim(ylim)?;
+    }
+    Ok(())
   }
 }
 
 
 /// Plot type.
-#[derive(Debug, RustcEncodable)]
+#[derive(Debug)]
 pub enum PlotData<'a> {
   Scatter(Scatter<'a>),
   Line2D(Line2D<'a>),
 }
 
-#[derive(Debug, Default, RustcEncodable)]
-pub struct Scatter<'a> {
-  x: &'a [f64],
-  y: &'a [f64],
-  config: ScatterConfig,
+impl<'a> PlotData<'a> {
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    match *self {
+      PlotData::Scatter(ref s) => s.apply(mpl),
+      PlotData::Line2D(ref l) => l.apply(mpl),
+    }
+  }
 }
 
-#[derive(Debug, Default, RustcEncodable)]
-pub struct ScatterConfig {
+#[derive(Debug, Default)]
+pub struct Scatter<'a> {
+  xdata: &'a [f64],
+  ydata: &'a [f64],
   label: Option<String>,
   color: Option<String>,
   marker: Option<String>,
@@ -99,25 +118,34 @@ impl<'a> Scatter<'a> {
     Scatter::default().label(name)
   }
 
-  pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
-    self.x = x;
-    self.y = y;
+  pub fn data(mut self, xdata: &'a [f64], ydata: &'a [f64]) -> Self {
+    self.xdata = xdata;
+    self.ydata = ydata;
     self
   }
 
   pub fn label(mut self, text: &str) -> Self {
-    self.config.label = Some(text.to_owned());
+    self.label = Some(text.to_owned());
     self
   }
 
   pub fn color(mut self, color: &str) -> Self {
-    self.config.color = Some(color.to_owned());
+    self.color = Some(color.to_owned());
     self
   }
 
   pub fn marker(mut self, marker: &str) -> Self {
-    self.config.marker = Some(marker.to_owned());
+    self.marker = Some(marker.to_owned());
     self
+  }
+
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    mpl.scatter(self.xdata,
+               self.ydata,
+               &self.label,
+               &self.color,
+               &self.marker)?;
+    Ok(())
   }
 }
 
@@ -128,15 +156,10 @@ impl<'a> From<Scatter<'a>> for PlotData<'a> {
 }
 
 
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct Line2D<'a> {
-  x: &'a [f64],
-  y: &'a [f64],
-  config: Line2DConfig,
-}
-
-#[derive(Debug, Default, RustcEncodable)]
-pub struct Line2DConfig {
+  xdata: &'a [f64],
+  ydata: &'a [f64],
   label: Option<String>,
   color: Option<String>,
   marker: Option<String>,
@@ -149,35 +172,46 @@ impl<'a> Line2D<'a> {
     Line2D::default().label(name)
   }
 
-  pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
-    self.x = x;
-    self.y = y;
+  pub fn data(mut self, xdata: &'a [f64], ydata: &'a [f64]) -> Self {
+    self.xdata = xdata;
+    self.ydata = ydata;
     self
   }
 
   pub fn label(mut self, text: &str) -> Self {
-    self.config.label = Some(text.to_owned());
+    self.label = Some(text.to_owned());
     self
   }
 
   pub fn color(mut self, color: &str) -> Self {
-    self.config.color = Some(color.to_owned());
+    self.color = Some(color.to_owned());
     self
   }
 
   pub fn marker(mut self, marker: &str) -> Self {
-    self.config.marker = Some(marker.to_owned());
+    self.marker = Some(marker.to_owned());
     self
   }
 
   pub fn linestyle(mut self, style: &str) -> Self {
-    self.config.linestyle = Some(style.to_owned());
+    self.linestyle = Some(style.to_owned());
     self
   }
 
   pub fn linewidth(mut self, width: f64) -> Self {
-    self.config.linewidth = Some(width);
+    self.linewidth = Some(width);
     self
+  }
+
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    mpl.plot(self.xdata,
+            self.ydata,
+            &self.label,
+            &self.color,
+            &self.marker,
+            &self.linestyle,
+            &self.linewidth)?;
+    Ok(())
   }
 }
 
