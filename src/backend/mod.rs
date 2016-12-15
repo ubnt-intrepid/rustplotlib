@@ -11,5 +11,11 @@ pub use self::mpl_native::MatplotlibNative;
 
 
 pub trait Backend<'a> {
-  fn evaluate(&'a mut self, fig: &'a Figure) -> io::Result<&'a mut Self>;
+  /// execute a string as Python script.
+  fn exec<S: AsRef<str>>(&mut self, script: S) -> io::Result<&mut Self>;
+
+  fn evaluate(&'a mut self, fig: &'a Figure) -> io::Result<&'a mut Self> {
+    fig.apply(self)?;
+    Ok(self)
+  }
 }

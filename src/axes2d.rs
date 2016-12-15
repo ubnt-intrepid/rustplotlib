@@ -1,11 +1,14 @@
+use std::io;
+use backend::Backend;
+
 /// Represents an instance of `matplotlib.axes.Axes`.
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct Axes2D<'a> {
   plot_data: Vec<PlotData<'a>>,
   config: Axes2DConfig,
 }
 
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct Axes2DConfig {
   xlabel: Option<String>,
   ylabel: Option<String>,
@@ -70,24 +73,51 @@ impl<'a> Axes2D<'a> {
     self.config.ylim = Some((lb, ub));
     self
   }
+
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    for ref plot in &self.plot_data {
+      plot.apply(mpl)?;
+    }
+    mpl.exec(format!("ax.grid({})",
+                    if self.config.grid { "True" } else { "False" }))?;
+    if let Some(ref loc) = self.config.legend {
+      mpl.exec(format!("ax.legend(loc='{}')", loc))?;
+    }
+    if let Some((ref lb, ref ub)) = self.config.xlim {
+      mpl.exec(format!("ax.set_xlim(({}, {}))", lb, ub))?;
+    }
+    if let Some((ref lb, ref ub)) = self.config.ylim {
+      mpl.exec(format!("ax.set_ylim(({}, {}))", lb, ub))?;
+    }
+    Ok(())
+  }
 }
 
 
 /// Plot type.
-#[derive(Debug, RustcEncodable)]
+#[derive(Debug)]
 pub enum PlotData<'a> {
   Scatter(Scatter<'a>),
   Line2D(Line2D<'a>),
 }
 
-#[derive(Debug, Default, RustcEncodable)]
+impl<'a> PlotData<'a> {
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    match *self {
+      PlotData::Scatter(ref s) => s.apply(mpl),
+      PlotData::Line2D(ref l) => l.apply(mpl),
+    }
+  }
+}
+
+#[derive(Debug, Default)]
 pub struct Scatter<'a> {
   x: &'a [f64],
   y: &'a [f64],
   config: ScatterConfig,
 }
 
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct ScatterConfig {
   label: Option<String>,
   color: Option<String>,
@@ -119,6 +149,29 @@ impl<'a> Scatter<'a> {
     self.config.marker = Some(marker.to_owned());
     self
   }
+
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    let xdata = to_pyvec(self.x);
+    let ydata = to_pyvec(self.y);
+    let mut code = format!("ax.scatter({}, {}, ", xdata, ydata);
+    if let Some(ref label) = self.config.label {
+      code += &format!("label='{}', ", label);
+    }
+    if let Some(ref color) = self.config.color {
+      code += &format!("color='{}', ", color);
+    }
+    if let Some(ref marker) = self.config.marker {
+      code += &format!("marker='{}', ", marker);
+    }
+    code += ")";
+    mpl.exec(code)?;
+    Ok(())
+  }
+}
+
+fn to_pyvec(data: &[f64]) -> String {
+  let data: Vec<String> = data.iter().map(|x| format!("{}", x)).collect();
+  format!("[{}]", data.join(","))
 }
 
 impl<'a> From<Scatter<'a>> for PlotData<'a> {
@@ -128,14 +181,14 @@ impl<'a> From<Scatter<'a>> for PlotData<'a> {
 }
 
 
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct Line2D<'a> {
   x: &'a [f64],
   y: &'a [f64],
   config: Line2DConfig,
 }
 
-#[derive(Debug, Default, RustcEncodable)]
+#[derive(Debug, Default)]
 pub struct Line2DConfig {
   label: Option<String>,
   color: Option<String>,
@@ -178,6 +231,30 @@ impl<'a> Line2D<'a> {
   pub fn linewidth(mut self, width: f64) -> Self {
     self.config.linewidth = Some(width);
     self
+  }
+
+  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+    let xdata = to_pyvec(self.x);
+    let ydata = to_pyvec(self.y);
+    let mut code = format!("ax.plot({}, {}, ", xdata, ydata);
+    if let Some(ref label) = self.config.label {
+      code += &format!("label='{}', ", label);
+    }
+    if let Some(ref color) = self.config.color {
+      code += &format!("color='{}', ", color);
+    }
+    if let Some(ref marker) = self.config.marker {
+      code += &format!("marker='{}', ", marker);
+    }
+    if let Some(ref ls) = self.config.linestyle {
+      code += &format!("linestyle='{}', ", ls);
+    }
+    if let Some(ref lw) = self.config.linewidth {
+      code += &format!("linewidth='{}', ", lw);
+    }
+    code += ")";
+    mpl.exec(code)?;
+    Ok(())
   }
 }
 
