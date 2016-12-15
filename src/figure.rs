@@ -22,7 +22,7 @@ impl<'a> Figure<'a> {
     self
   }
 
-  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+  pub fn apply<B: Backend>(&self, mpl: &mut B) -> io::Result<()> {
     mpl.figure()?;
     if let Some(ref axes) = self.axes {
       mpl.subplot(1, 1, 1)?;

@@ -34,17 +34,16 @@ fn main() {
 
 fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
   let mut mp = backend::Matplotlib::new()?;
-  mp.set_style("ggplot")?
-    .evaluate(fig)?
-    .savefig(filename)?
-    .wait()
+  mp.set_style("ggplot")?;
+  fig.apply(&mut mp)?;
+  mp.savefig(filename)?.wait()
 }
 
 #[cfg(feature = "native")]
 fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
   let mut mp = backend::MatplotlibNative::new();
-  mp.set_style("dark_background")?
-    .evaluate(fig)?
-    .savefig(filename)?;
+  mp.set_style("dark_background")?;
+  fig.apply(&mut mp)?;
+  mp.savefig(filename)?;
   Ok(())
 }

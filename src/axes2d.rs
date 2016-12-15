@@ -69,7 +69,7 @@ impl<'a> Axes2D<'a> {
     self
   }
 
-  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+  pub fn apply<B: Backend>(&self, mpl: &mut B) -> io::Result<()> {
     for ref plot in &self.plot_data {
       plot.apply(mpl)?;
     }
@@ -96,7 +96,7 @@ pub enum PlotData<'a> {
 }
 
 impl<'a> PlotData<'a> {
-  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+  pub fn apply<B: Backend>(&self, mpl: &mut B) -> io::Result<()> {
     match *self {
       PlotData::Scatter(ref s) => s.apply(mpl),
       PlotData::Line2D(ref l) => l.apply(mpl),
@@ -139,7 +139,7 @@ impl<'a> Scatter<'a> {
     self
   }
 
-  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+  pub fn apply<B: Backend>(&self, mpl: &mut B) -> io::Result<()> {
     mpl.scatter(self.xdata,
                self.ydata,
                &self.label,
@@ -203,7 +203,7 @@ impl<'a> Line2D<'a> {
     self
   }
 
-  pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
+  pub fn apply<B: Backend>(&self, mpl: &mut B) -> io::Result<()> {
     mpl.plot(self.xdata,
             self.ydata,
             &self.label,
