@@ -14,7 +14,7 @@ const PRELUDE: &'static str =
 /// Matplotlib backend for saving to the file.
 pub struct MatplotlibFile<'a> {
   path: PathBuf,
-  fig: Option<&'a Figure>,
+  fig: Option<&'a Figure<'a>>,
 }
 
 impl<'a> MatplotlibFile<'a> {

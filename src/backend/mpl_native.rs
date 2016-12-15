@@ -33,7 +33,7 @@ impl MatplotlibNative {
   }
 }
 
-impl Backend for MatplotlibNative {
+impl<'a> Backend<'a> for MatplotlibNative {
   fn evaluate(&mut self, fig: &Figure) -> io::Result<&mut Self> {
     self.exec(format!("fig = evaluate('{}')", msgpack(fig)));
     Ok(self)

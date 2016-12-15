@@ -1,7 +1,7 @@
 /// Represents an instance of `matplotlib.axes.Axes`.
 #[derive(Debug, Default, RustcEncodable)]
-pub struct Axes2D {
-  plot_data: Vec<PlotData>,
+pub struct Axes2D<'a> {
+  plot_data: Vec<PlotData<'a>>,
   config: Axes2DConfig,
 }
 
@@ -15,7 +15,7 @@ pub struct Axes2DConfig {
   ylim: Option<(f64, f64)>,
 }
 
-impl Axes2D {
+impl<'a> Axes2D<'a> {
   /// create an empty axes.
   ///
   /// This method is the shortcut of `Default::default()`.
@@ -24,7 +24,7 @@ impl Axes2D {
   }
 
   /// add a plot data.
-  pub fn add<P: Into<PlotData>>(mut self, p: P) -> Self {
+  pub fn add<P: Into<PlotData<'a>>>(mut self, p: P) -> Self {
     self.plot_data.push(p.into());
     self
   }
@@ -75,15 +75,15 @@ impl Axes2D {
 
 /// Plot type.
 #[derive(Debug, RustcEncodable)]
-pub enum PlotData {
-  Scatter(Scatter),
-  Plot(Plot),
+pub enum PlotData<'a> {
+  Scatter(Scatter<'a>),
+  Plot(Plot<'a>),
 }
 
 #[derive(Debug, Default, RustcEncodable)]
-pub struct Scatter {
-  x: Vec<f64>,
-  y: Vec<f64>,
+pub struct Scatter<'a> {
+  x: &'a [f64],
+  y: &'a [f64],
   config: ScatterConfig,
 }
 
@@ -94,17 +94,14 @@ pub struct ScatterConfig {
   marker: Option<String>,
 }
 
-impl Scatter {
-  pub fn new(name: &str) -> Scatter {
+impl<'a> Scatter<'a> {
+  pub fn new(name: &str) -> Scatter<'a> {
     Scatter::default().label(name)
   }
 
-  pub fn data<X, Y>(mut self, x: X, y: Y) -> Self
-    where X: Into<Vec<f64>>,
-          Y: Into<Vec<f64>>
-  {
-    self.x = x.into();
-    self.y = y.into();
+  pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
+    self.x = x;
+    self.y = y;
     self
   }
 
@@ -124,7 +121,7 @@ impl Scatter {
   }
 }
 
-impl From<Scatter> for PlotData {
+impl<'a> From<Scatter<'a>> for PlotData<'a> {
   fn from(data: Scatter) -> PlotData {
     PlotData::Scatter(data)
   }
@@ -132,9 +129,9 @@ impl From<Scatter> for PlotData {
 
 
 #[derive(Debug, Default, RustcEncodable)]
-pub struct Plot {
-  x: Vec<f64>,
-  y: Vec<f64>,
+pub struct Plot<'a> {
+  x: &'a [f64],
+  y: &'a [f64],
   config: PlotConfig,
 }
 
@@ -147,17 +144,14 @@ pub struct PlotConfig {
   linewidth: Option<f64>,
 }
 
-impl Plot {
-  pub fn new(name: &str) -> Plot {
+impl<'a> Plot<'a> {
+  pub fn new(name: &str) -> Plot<'a> {
     Plot::default().label(name)
   }
 
-  pub fn data<X, Y>(mut self, x: X, y: Y) -> Self
-    where X: Into<Vec<f64>>,
-          Y: Into<Vec<f64>>
-  {
-    self.x = x.into();
-    self.y = y.into();
+  pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
+    self.x = x;
+    self.y = y;
     self
   }
 
@@ -187,8 +181,8 @@ impl Plot {
   }
 }
 
-impl From<Plot> for PlotData {
-  fn from(data: Plot) -> PlotData {
+impl<'a> From<Plot<'a>> for PlotData<'a> {
+  fn from(data: Plot<'a>) -> PlotData<'a> {
     PlotData::Plot(data)
   }
 }

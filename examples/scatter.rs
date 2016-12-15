@@ -11,10 +11,10 @@ fn main() {
 
   let fig = Figure::new().axes2d(Axes2D::new()
     .add(Scatter::new("sin(x)")
-      .data(&x[..], y1)
+      .data(&x, &y1)
       .marker("o"))
     .add(Plot::new("cos(x)")
-      .data(&x[..], &y2[..])
+      .data(&x, &y2)
       .color("red")
       .marker("x")
       .linestyle("--")
