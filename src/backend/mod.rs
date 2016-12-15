@@ -11,7 +11,7 @@ pub use self::mpl_native::MatplotlibNative;
 
 pub trait Backend {
   fn figure(&mut self) -> io::Result<&mut Self>;
-  fn subplot(&mut self, i: i32, j: i32, k: i32) -> io::Result<&mut Self>;
+  fn subplot(&mut self, i: u32, j: u32, k: u32) -> io::Result<&mut Self>;
   fn grid(&mut self, grid: bool) -> io::Result<&mut Self>;
   fn legend(&mut self, loc: &str) -> io::Result<&mut Self>;
   fn xlim(&mut self, xlim: &(f64, f64)) -> io::Result<&mut Self>;

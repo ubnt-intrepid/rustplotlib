@@ -11,7 +11,7 @@ fn main() {
   let y1: Vec<f64> = x.iter().map(|x| x.sin()).collect();
   let y2: Vec<f64> = x.iter().map(|x| x.cos()).collect();
 
-  let fig = Figure::new().axes2d(Axes2D::new()
+  let axes = Axes2D::new()
     .add(Scatter::new("sin(x)")
       .data(&x, &y1)
       .marker("o"))
@@ -25,7 +25,8 @@ fn main() {
     .ylabel("Distance [mm]")
     .legend("upper right")
     .xlim(0.0, 8.0)
-    .ylim(-2.0, 2.0));
+    .ylim(-2.0, 2.0);
+  let fig = Figure::new().subplots(2, 1, vec![Some(axes)]);
 
   apply_mpl(&fig, "scatter.png").unwrap();
   #[cfg(feature = "native")]

@@ -49,7 +49,7 @@ impl Backend for MatplotlibNative {
     Ok(self)
   }
 
-  fn subplot(&mut self, i: i32, j: i32, k: i32) -> io::Result<&mut Self> {
+  fn subplot(&mut self, i: u32, j: u32, k: u32) -> io::Result<&mut Self> {
     self.plt.call(self.python(), "subplot", (i, j, k), None).unwrap();
     Ok(self)
   }
