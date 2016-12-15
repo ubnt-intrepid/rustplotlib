@@ -1,11 +1,8 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
 use std::io;
 use backend::Backend;
 use figure::Figure;
 use util::msgpack;
-use cpython::{GILGuard, Python, PyModule};
+use cpython::{GILGuard, Python, PyModule, PyTuple, PyResult};
 
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
@@ -36,26 +33,31 @@ impl MatplotlibNative {
     self
   }
 
-  pub fn set_stylesheet(&mut self, stylename: &str) -> io::Result<&mut Self> {
+  pub fn set_stylesheet(&mut self, stylename: &str) -> PyResult<&mut Self> {
     {
       use cpython::FromPyObject;
       let py = self.python();
-      let plt = PyModule::import(py, "matplotlib.pyplot")
-        .map_err(|_| io::Error::new(io::ErrorKind::Other, "failed to load matplotlib.pyplot"))?;
-      let style = PyModule::extract(py, &plt.get(py, "style").unwrap())
-        .map_err(|_| io::Error::new(io::ErrorKind::Other, "failed to load the module 'style'"))?;
-      style.call(py, "use", (stylename,), None).unwrap();
+      let plt = PyModule::import(py, "matplotlib.pyplot")?;
+      let style = plt.get(py, "style").and_then(|ref style| PyModule::extract(py, style))?;
+      style.call(py, "use", (stylename,), None)?;
     }
     Ok(self)
   }
 
-  pub fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
+  pub fn savefig(&mut self, filename: &str) -> PyResult<&mut Self> {
     {
       let py = self.python();
-      let plt = PyModule::import(py, "matplotlib.pyplot")
-        .map_err(|_| io::Error::new(io::ErrorKind::Other, "failed to load matplotlib.pyplot"))?;
-      plt.call(py, "savefig", (filename,), None)
-        .map_err(|_| io::Error::new(io::ErrorKind::Other, "failed to call savefig()"))?;
+      let plt = PyModule::import(py, "matplotlib.pyplot")?;
+      plt.call(py, "savefig", (filename,), None)?;
+    }
+    Ok(self)
+  }
+
+  pub fn show(&mut self) -> PyResult<&mut Self> {
+    {
+      let py = self.python();
+      let plt = PyModule::import(py, "matplotlib.pyplot")?;
+      plt.call(py, "show", PyTuple::empty(py), None)?;
     }
     Ok(self)
   }

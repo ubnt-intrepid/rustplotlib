@@ -31,7 +31,7 @@ fn main() {
   apply_mpl_file(&fig, "scatter.py").unwrap();
 
   #[cfg(feature = "native")]
-  apply_mpl_native(&fig, "scatter_native.png").unwrap();
+  apply_mpl_native(&fig, "scatter_native.png");
 }
 
 fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
@@ -49,10 +49,12 @@ fn apply_mpl_file(fig: &Figure, filename: &str) -> std::io::Result<()> {
 }
 
 #[cfg(feature = "native")]
-fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
+fn apply_mpl_native(fig: &Figure, filename: &str) {
   let mut mp = backend::MatplotlibNative::new();
-  mp.set_stylesheet("dark_background")?
-    .evaluate(fig)?
-    .savefig(filename)?;
-  Ok(())
+  mp.set_stylesheet("dark_background")
+    .unwrap()
+    .evaluate(fig)
+    .unwrap()
+    .savefig(filename)
+    .unwrap();
 }
