@@ -73,15 +73,16 @@ impl<'a> Axes2D<'a> {
     for ref plot in &self.plot_data {
       plot.apply(mpl)?;
     }
-    mpl.exec(format!("ax.grid({})", if self.grid { "True" } else { "False" }))?;
+    mpl.exec(format!("plt.gca().grid({})",
+                    if self.grid { "True" } else { "False" }))?;
     if let Some(ref loc) = self.legend {
-      mpl.exec(format!("ax.legend(loc='{}')", loc))?;
+      mpl.exec(format!("plt.gca().legend(loc='{}')", loc))?;
     }
     if let Some((ref lb, ref ub)) = self.xlim {
-      mpl.exec(format!("ax.set_xlim(({}, {}))", lb, ub))?;
+      mpl.exec(format!("plt.gca().set_xlim(({}, {}))", lb, ub))?;
     }
     if let Some((ref lb, ref ub)) = self.ylim {
-      mpl.exec(format!("ax.set_ylim(({}, {}))", lb, ub))?;
+      mpl.exec(format!("plt.gca().set_ylim(({}, {}))", lb, ub))?;
     }
     Ok(())
   }
@@ -142,7 +143,7 @@ impl<'a> Scatter<'a> {
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
     let xdata = to_pyvec(self.xdata);
     let ydata = to_pyvec(self.ydata);
-    let mut code = format!("ax.scatter({}, {}, ", xdata, ydata);
+    let mut code = format!("plt.gca().scatter({}, {}, ", xdata, ydata);
     if let Some(ref label) = self.label {
       code += &format!("label='{}', ", label);
     }
@@ -215,7 +216,7 @@ impl<'a> Line2D<'a> {
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
     let xdata = to_pyvec(self.xdata);
     let ydata = to_pyvec(self.ydata);
-    let mut code = format!("ax.plot({}, {}, ", xdata, ydata);
+    let mut code = format!("plt.gca().plot({}, {}, ", xdata, ydata);
     if let Some(ref label) = self.label {
       code += &format!("label='{}', ", label);
     }
