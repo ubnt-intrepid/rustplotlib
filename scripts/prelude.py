@@ -35,9 +35,38 @@ class ScatterConfig(object):
         )
 
 
+class Plot(object):
+    def __init__(self, data):
+        self.x1 = data[0]
+        self.x2 = data[1]
+        self.config = PlotConfig(data[2])
+
+    def apply(self, ax):
+        ax.plot(self.x1, self.x2, **self.config.as_dict())
+
+class PlotConfig(object):
+    def __init__(self, data):
+        self.label      = str_decode(data[0])
+        self.color      = str_decode(data[1])
+        self.marker     = str_decode(data[2])
+        self.linestyle  = str_decode(data[3])
+        self.linewidth  = data[4]
+
+    def as_dict(self):
+        return dict(
+            label=self.label,
+            color=self.color,
+            marker=self.marker,
+            linestyle=self.linestyle,
+            linewidth=self.linewidth,
+        )
+
+
 def plot_data(data):
     if data[0] == 0: # scatter
         return Scatter(data[1][0])
+    elif data[0] == 1: # plot
+        return Plot(data[1][0])
     else:
         return None
 

@@ -77,6 +77,7 @@ impl Axes2D {
 #[derive(Debug, RustcEncodable)]
 pub enum PlotData {
   Scatter(Scatter),
+  Plot(Plot),
 }
 
 #[derive(Debug, Default, RustcEncodable)]
@@ -126,5 +127,68 @@ impl Scatter {
 impl From<Scatter> for PlotData {
   fn from(data: Scatter) -> PlotData {
     PlotData::Scatter(data)
+  }
+}
+
+
+#[derive(Debug, Default, RustcEncodable)]
+pub struct Plot {
+  x: Vec<f64>,
+  y: Vec<f64>,
+  config: PlotConfig,
+}
+
+#[derive(Debug, Default, RustcEncodable)]
+pub struct PlotConfig {
+  label: Option<String>,
+  color: Option<String>,
+  marker: Option<String>,
+  linestyle: Option<String>,
+  linewidth: Option<f64>,
+}
+
+impl Plot {
+  pub fn new(name: &str) -> Plot {
+    Plot::default().label(name)
+  }
+
+  pub fn data<X, Y>(mut self, x: X, y: Y) -> Self
+    where X: Into<Vec<f64>>,
+          Y: Into<Vec<f64>>
+  {
+    self.x = x.into();
+    self.y = y.into();
+    self
+  }
+
+  pub fn label(mut self, text: &str) -> Self {
+    self.config.label = Some(text.to_owned());
+    self
+  }
+
+  pub fn color(mut self, color: &str) -> Self {
+    self.config.color = Some(color.to_owned());
+    self
+  }
+
+  pub fn marker(mut self, marker: &str) -> Self {
+    self.config.marker = Some(marker.to_owned());
+    self
+  }
+
+  pub fn linestyle(mut self, style: &str) -> Self {
+    self.config.linestyle = Some(style.to_owned());
+    self
+  }
+
+  pub fn linewidth(mut self, width: f64) -> Self {
+    self.config.linewidth = Some(width);
+    self
+  }
+}
+
+impl From<Plot> for PlotData {
+  fn from(data: Plot) -> PlotData {
+    PlotData::Plot(data)
   }
 }
