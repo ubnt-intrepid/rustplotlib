@@ -5,11 +5,6 @@ use backend::Backend;
 #[derive(Debug, Default)]
 pub struct Axes2D<'a> {
   plot_data: Vec<PlotData<'a>>,
-  config: Axes2DConfig,
-}
-
-#[derive(Debug, Default)]
-pub struct Axes2DConfig {
   xlabel: Option<String>,
   ylabel: Option<String>,
   grid: bool,
@@ -34,19 +29,19 @@ impl<'a> Axes2D<'a> {
 
   /// set the label text of x axis.
   pub fn xlabel(mut self, text: &str) -> Self {
-    self.config.xlabel = Some(text.to_owned());
+    self.xlabel = Some(text.to_owned());
     self
   }
 
   /// set the label text of y axis.
   pub fn ylabel(mut self, text: &str) -> Self {
-    self.config.ylabel = Some(text.to_owned());
+    self.ylabel = Some(text.to_owned());
     self
   }
 
   /// set whether the grid is shown or not.
   pub fn grid(mut self, enabled: bool) -> Self {
-    self.config.grid = enabled;
+    self.grid = enabled;
     self
   }
 
@@ -54,7 +49,7 @@ impl<'a> Axes2D<'a> {
   ///
   /// if the value of `loc` is empty, the legend is hidden.
   pub fn legend(mut self, loc: &str) -> Self {
-    self.config.legend = if loc.trim() != "" {
+    self.legend = if loc.trim() != "" {
       Some(loc.to_owned())
     } else {
       None
@@ -64,13 +59,13 @@ impl<'a> Axes2D<'a> {
 
   /// set the range of x axis.
   pub fn xlim(mut self, lb: f64, ub: f64) -> Self {
-    self.config.xlim = Some((lb, ub));
+    self.xlim = Some((lb, ub));
     self
   }
 
   /// set the range of y axis.
   pub fn ylim(mut self, lb: f64, ub: f64) -> Self {
-    self.config.ylim = Some((lb, ub));
+    self.ylim = Some((lb, ub));
     self
   }
 
@@ -78,15 +73,14 @@ impl<'a> Axes2D<'a> {
     for ref plot in &self.plot_data {
       plot.apply(mpl)?;
     }
-    mpl.exec(format!("ax.grid({})",
-                    if self.config.grid { "True" } else { "False" }))?;
-    if let Some(ref loc) = self.config.legend {
+    mpl.exec(format!("ax.grid({})", if self.grid { "True" } else { "False" }))?;
+    if let Some(ref loc) = self.legend {
       mpl.exec(format!("ax.legend(loc='{}')", loc))?;
     }
-    if let Some((ref lb, ref ub)) = self.config.xlim {
+    if let Some((ref lb, ref ub)) = self.xlim {
       mpl.exec(format!("ax.set_xlim(({}, {}))", lb, ub))?;
     }
-    if let Some((ref lb, ref ub)) = self.config.ylim {
+    if let Some((ref lb, ref ub)) = self.ylim {
       mpl.exec(format!("ax.set_ylim(({}, {}))", lb, ub))?;
     }
     Ok(())
@@ -112,13 +106,8 @@ impl<'a> PlotData<'a> {
 
 #[derive(Debug, Default)]
 pub struct Scatter<'a> {
-  x: &'a [f64],
-  y: &'a [f64],
-  config: ScatterConfig,
-}
-
-#[derive(Debug, Default)]
-pub struct ScatterConfig {
+  xdata: &'a [f64],
+  ydata: &'a [f64],
   label: Option<String>,
   color: Option<String>,
   marker: Option<String>,
@@ -129,49 +118,44 @@ impl<'a> Scatter<'a> {
     Scatter::default().label(name)
   }
 
-  pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
-    self.x = x;
-    self.y = y;
+  pub fn data(mut self, xdata: &'a [f64], ydata: &'a [f64]) -> Self {
+    self.xdata = xdata;
+    self.ydata = ydata;
     self
   }
 
   pub fn label(mut self, text: &str) -> Self {
-    self.config.label = Some(text.to_owned());
+    self.label = Some(text.to_owned());
     self
   }
 
   pub fn color(mut self, color: &str) -> Self {
-    self.config.color = Some(color.to_owned());
+    self.color = Some(color.to_owned());
     self
   }
 
   pub fn marker(mut self, marker: &str) -> Self {
-    self.config.marker = Some(marker.to_owned());
+    self.marker = Some(marker.to_owned());
     self
   }
 
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
-    let xdata = to_pyvec(self.x);
-    let ydata = to_pyvec(self.y);
+    let xdata = to_pyvec(self.xdata);
+    let ydata = to_pyvec(self.ydata);
     let mut code = format!("ax.scatter({}, {}, ", xdata, ydata);
-    if let Some(ref label) = self.config.label {
+    if let Some(ref label) = self.label {
       code += &format!("label='{}', ", label);
     }
-    if let Some(ref color) = self.config.color {
+    if let Some(ref color) = self.color {
       code += &format!("color='{}', ", color);
     }
-    if let Some(ref marker) = self.config.marker {
+    if let Some(ref marker) = self.marker {
       code += &format!("marker='{}', ", marker);
     }
     code += ")";
     mpl.exec(code)?;
     Ok(())
   }
-}
-
-fn to_pyvec(data: &[f64]) -> String {
-  let data: Vec<String> = data.iter().map(|x| format!("{}", x)).collect();
-  format!("[{}]", data.join(","))
 }
 
 impl<'a> From<Scatter<'a>> for PlotData<'a> {
@@ -183,13 +167,8 @@ impl<'a> From<Scatter<'a>> for PlotData<'a> {
 
 #[derive(Debug, Default)]
 pub struct Line2D<'a> {
-  x: &'a [f64],
-  y: &'a [f64],
-  config: Line2DConfig,
-}
-
-#[derive(Debug, Default)]
-pub struct Line2DConfig {
+  xdata: &'a [f64],
+  ydata: &'a [f64],
   label: Option<String>,
   color: Option<String>,
   marker: Option<String>,
@@ -202,54 +181,54 @@ impl<'a> Line2D<'a> {
     Line2D::default().label(name)
   }
 
-  pub fn data(mut self, x: &'a [f64], y: &'a [f64]) -> Self {
-    self.x = x;
-    self.y = y;
+  pub fn data(mut self, xdata: &'a [f64], ydata: &'a [f64]) -> Self {
+    self.xdata = xdata;
+    self.ydata = ydata;
     self
   }
 
   pub fn label(mut self, text: &str) -> Self {
-    self.config.label = Some(text.to_owned());
+    self.label = Some(text.to_owned());
     self
   }
 
   pub fn color(mut self, color: &str) -> Self {
-    self.config.color = Some(color.to_owned());
+    self.color = Some(color.to_owned());
     self
   }
 
   pub fn marker(mut self, marker: &str) -> Self {
-    self.config.marker = Some(marker.to_owned());
+    self.marker = Some(marker.to_owned());
     self
   }
 
   pub fn linestyle(mut self, style: &str) -> Self {
-    self.config.linestyle = Some(style.to_owned());
+    self.linestyle = Some(style.to_owned());
     self
   }
 
   pub fn linewidth(mut self, width: f64) -> Self {
-    self.config.linewidth = Some(width);
+    self.linewidth = Some(width);
     self
   }
 
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
-    let xdata = to_pyvec(self.x);
-    let ydata = to_pyvec(self.y);
+    let xdata = to_pyvec(self.xdata);
+    let ydata = to_pyvec(self.ydata);
     let mut code = format!("ax.plot({}, {}, ", xdata, ydata);
-    if let Some(ref label) = self.config.label {
+    if let Some(ref label) = self.label {
       code += &format!("label='{}', ", label);
     }
-    if let Some(ref color) = self.config.color {
+    if let Some(ref color) = self.color {
       code += &format!("color='{}', ", color);
     }
-    if let Some(ref marker) = self.config.marker {
+    if let Some(ref marker) = self.marker {
       code += &format!("marker='{}', ", marker);
     }
-    if let Some(ref ls) = self.config.linestyle {
+    if let Some(ref ls) = self.linestyle {
       code += &format!("linestyle='{}', ", ls);
     }
-    if let Some(ref lw) = self.config.linewidth {
+    if let Some(ref lw) = self.linewidth {
       code += &format!("linewidth='{}', ", lw);
     }
     code += ")";
@@ -262,4 +241,9 @@ impl<'a> From<Line2D<'a>> for PlotData<'a> {
   fn from(data: Line2D<'a>) -> PlotData<'a> {
     PlotData::Line2D(data)
   }
+}
+
+fn to_pyvec(data: &[f64]) -> String {
+  let data: Vec<String> = data.iter().map(|x| format!("{}", x)).collect();
+  format!("[{}]", data.join(","))
 }
