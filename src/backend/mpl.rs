@@ -35,6 +35,14 @@ impl Matplotlib {
     }
     Ok(self)
   }
+
+  // save current figure as a pickle-format file.
+  pub fn dump_pickle<S: AsRef<str>>(&mut self, filename: S) -> io::Result<&mut Self> {
+    self.exec("import numpy as np")?;
+    self.exec("import pickle as pl")?;
+    self.exec(format!("pl.dump(plt.gcf(), open('{}', 'wb'))", filename.as_ref()))?;
+    Ok(self)
+  }
 }
 
 impl Backend for Matplotlib {
