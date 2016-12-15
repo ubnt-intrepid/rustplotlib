@@ -28,8 +28,6 @@ fn main() {
     .ylim(-2.0, 2.0));
 
   apply_mpl(&fig, "scatter.png").unwrap();
-  apply_mpl_file(&fig, "scatter.py").unwrap();
-
   #[cfg(feature = "native")]
   apply_mpl_native(&fig, "scatter_native.png");
 }
@@ -40,12 +38,6 @@ fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
     .evaluate(fig)?
     .exec(format!("fig.savefig('{}')", filename))?
     .wait()
-}
-
-fn apply_mpl_file(fig: &Figure, filename: &str) -> std::io::Result<()> {
-  let mut mp = backend::MatplotlibFile::new(filename)?;
-  mp.evaluate(fig)?
-    .flush()
 }
 
 #[cfg(feature = "native")]
