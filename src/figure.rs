@@ -23,9 +23,9 @@ impl<'a> Figure<'a> {
   }
 
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
-    mpl.exec("plt.figure()")?;
+    mpl.figure()?;
     if let Some(ref axes) = self.axes {
-      mpl.exec("plt.gcf().add_subplot(1,1,1)")?;
+      mpl.subplot(1, 1, 1)?;
       axes.apply(mpl)?;
     }
     Ok(())

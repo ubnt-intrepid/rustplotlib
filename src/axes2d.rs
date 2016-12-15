@@ -73,16 +73,15 @@ impl<'a> Axes2D<'a> {
     for ref plot in &self.plot_data {
       plot.apply(mpl)?;
     }
-    mpl.exec(format!("plt.gca().grid({})",
-                    if self.grid { "True" } else { "False" }))?;
+    mpl.grid(self.grid)?;
     if let Some(ref loc) = self.legend {
-      mpl.exec(format!("plt.gca().legend(loc='{}')", loc))?;
+      mpl.legend(loc)?;
     }
-    if let Some((ref lb, ref ub)) = self.xlim {
-      mpl.exec(format!("plt.gca().set_xlim(({}, {}))", lb, ub))?;
+    if let Some(ref xlim) = self.xlim {
+      mpl.xlim(xlim)?;
     }
-    if let Some((ref lb, ref ub)) = self.ylim {
-      mpl.exec(format!("plt.gca().set_ylim(({}, {}))", lb, ub))?;
+    if let Some(ref ylim) = self.ylim {
+      mpl.ylim(ylim)?;
     }
     Ok(())
   }
@@ -141,20 +140,11 @@ impl<'a> Scatter<'a> {
   }
 
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
-    let xdata = to_pyvec(self.xdata);
-    let ydata = to_pyvec(self.ydata);
-    let mut code = format!("plt.gca().scatter({}, {}, ", xdata, ydata);
-    if let Some(ref label) = self.label {
-      code += &format!("label='{}', ", label);
-    }
-    if let Some(ref color) = self.color {
-      code += &format!("color='{}', ", color);
-    }
-    if let Some(ref marker) = self.marker {
-      code += &format!("marker='{}', ", marker);
-    }
-    code += ")";
-    mpl.exec(code)?;
+    mpl.scatter(self.xdata,
+               self.ydata,
+               &self.label,
+               &self.color,
+               &self.marker)?;
     Ok(())
   }
 }
@@ -214,26 +204,13 @@ impl<'a> Line2D<'a> {
   }
 
   pub fn apply<'b, B: Backend<'b> + ?Sized>(&self, mpl: &mut B) -> io::Result<()> {
-    let xdata = to_pyvec(self.xdata);
-    let ydata = to_pyvec(self.ydata);
-    let mut code = format!("plt.gca().plot({}, {}, ", xdata, ydata);
-    if let Some(ref label) = self.label {
-      code += &format!("label='{}', ", label);
-    }
-    if let Some(ref color) = self.color {
-      code += &format!("color='{}', ", color);
-    }
-    if let Some(ref marker) = self.marker {
-      code += &format!("marker='{}', ", marker);
-    }
-    if let Some(ref ls) = self.linestyle {
-      code += &format!("linestyle='{}', ", ls);
-    }
-    if let Some(ref lw) = self.linewidth {
-      code += &format!("linewidth='{}', ", lw);
-    }
-    code += ")";
-    mpl.exec(code)?;
+    mpl.plot(self.xdata,
+            self.ydata,
+            &self.label,
+            &self.color,
+            &self.marker,
+            &self.linestyle,
+            &self.linewidth)?;
     Ok(())
   }
 }
@@ -242,9 +219,4 @@ impl<'a> From<Line2D<'a>> for PlotData<'a> {
   fn from(data: Line2D<'a>) -> PlotData<'a> {
     PlotData::Line2D(data)
   }
-}
-
-fn to_pyvec(data: &[f64]) -> String {
-  let data: Vec<String> = data.iter().map(|x| format!("{}", x)).collect();
-  format!("[{}]", data.join(","))
 }
