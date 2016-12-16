@@ -3,15 +3,15 @@ extern crate rustplotlib;
 extern crate cpython;
 
 use rustplotlib::{backend, Backend};
-use rustplotlib::{Figure, Axes2D, Scatter, Line2D};
+use rustplotlib::{Figure, Axes2D, Scatter, Line2D, FillBetween};
 use std::f64::consts::PI;
 
 fn main() {
-  let x: Vec<f64> = (0..30).into_iter().map(|i| (i as f64) * 0.08 * PI).collect();
+  let x: Vec<f64> = (0..40).into_iter().map(|i| (i as f64) * 0.08 * PI).collect();
   let y1: Vec<f64> = x.iter().map(|x| x.sin()).collect();
   let y2: Vec<f64> = x.iter().map(|x| x.cos()).collect();
 
-  let axes = Axes2D::new()
+  let ax1 = Axes2D::new()
     .add(Scatter::new("sin(x)")
       .data(&x, &y1)
       .marker("o"))
@@ -26,11 +26,15 @@ fn main() {
     .legend("upper right")
     .xlim(0.0, 8.0)
     .ylim(-2.0, 2.0);
-  let fig = Figure::new().subplots(2, 1, vec![Some(axes)]);
+  let ax2 = Axes2D::new().add(FillBetween::new()
+    .data(&x, &y1, &y2)
+    .interpolate(true));
 
-  apply_mpl(&fig, "scatter.png").unwrap();
+  let fig = Figure::new().subplots(2, 1, vec![Some(ax1), Some(ax2)]);
+
+  apply_mpl(&fig, "simple.png").unwrap();
   #[cfg(feature = "native")]
-  apply_mpl_native(&fig, "scatter_native.png").unwrap();
+  apply_mpl_native(&fig, "simple_native.png").unwrap();
 }
 
 fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {

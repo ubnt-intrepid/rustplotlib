@@ -16,13 +16,9 @@ pub trait Backend {
   fn legend(&mut self, loc: &str) -> io::Result<&mut Self>;
   fn xlim(&mut self, xlim: &(f64, f64)) -> io::Result<&mut Self>;
   fn ylim(&mut self, ylim: &(f64, f64)) -> io::Result<&mut Self>;
-  fn scatter(&mut self,
-             xdata: &[f64],
-             ydata: &[f64],
-             label: &Option<String>,
-             color: &Option<String>,
-             marker: &Option<String>)
-             -> io::Result<&mut Self>;
+  fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self>;
+  fn savefig(&mut self, filename: &str) -> io::Result<&mut Self>;
+  fn show(&mut self) -> io::Result<&mut Self>;
   fn plot(&mut self,
           xdata: &[f64],
           ydata: &[f64],
@@ -32,7 +28,19 @@ pub trait Backend {
           linestyle: &Option<String>,
           linewidth: &Option<f64>)
           -> io::Result<&mut Self>;
-  fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self>;
-  fn savefig(&mut self, filename: &str) -> io::Result<&mut Self>;
-  fn show(&mut self) -> io::Result<&mut Self>;
+  fn scatter(&mut self,
+             xdata: &[f64],
+             ydata: &[f64],
+             label: &Option<String>,
+             color: &Option<String>,
+             marker: &Option<String>)
+             -> io::Result<&mut Self>;
+  fn fill_between(&mut self,
+                  x: &[f64],
+                  y1: &[f64],
+                  y2: &[f64],
+                  where_: &Option<&[bool]>,
+                  interpolate: bool,
+                  step: &Option<String>)
+                  -> io::Result<&mut Self>;
 }

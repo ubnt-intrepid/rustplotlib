@@ -93,6 +93,7 @@ impl<'a> Axes2D<'a> {
 pub enum PlotData<'a> {
   Scatter(Scatter<'a>),
   Line2D(Line2D<'a>),
+  FillBetween(FillBetween<'a>),
 }
 
 impl<'a> PlotData<'a> {
@@ -100,6 +101,7 @@ impl<'a> PlotData<'a> {
     match *self {
       PlotData::Scatter(ref s) => s.apply(mpl),
       PlotData::Line2D(ref l) => l.apply(mpl),
+      PlotData::FillBetween(ref f) => f.apply(mpl),
     }
   }
 }
@@ -218,5 +220,60 @@ impl<'a> Line2D<'a> {
 impl<'a> From<Line2D<'a>> for PlotData<'a> {
   fn from(data: Line2D<'a>) -> PlotData<'a> {
     PlotData::Line2D(data)
+  }
+}
+
+
+#[derive(Debug, Default)]
+pub struct FillBetween<'a> {
+  x: &'a [f64],
+  y1: &'a [f64],
+  y2: &'a [f64],
+  where_: Option<&'a [bool]>,
+  interpolate: bool,
+  step: Option<String>,
+}
+
+impl<'a> FillBetween<'a> {
+  pub fn new() -> FillBetween<'a> {
+    FillBetween::default()
+  }
+
+  pub fn data(mut self, x: &'a [f64], y1: &'a [f64], y2: &'a [f64]) -> Self {
+    self.x = x;
+    self.y1 = y1;
+    self.y2 = y2;
+    self
+  }
+
+  pub fn where_(mut self, where_: &'a [bool]) -> Self {
+    self.where_ = Some(where_);
+    self
+  }
+
+  pub fn interpolate(mut self, interpolate: bool) -> Self {
+    self.interpolate = interpolate;
+    self
+  }
+
+  pub fn step(mut self, step: &str) -> Self {
+    self.step = Some(step.to_owned());
+    self
+  }
+
+  pub fn apply<B: Backend>(&self, mpl: &mut B) -> io::Result<()> {
+    mpl.fill_between(self.x,
+                    self.y1,
+                    self.y2,
+                    &self.where_,
+                    self.interpolate,
+                    &self.step)?;
+    Ok(())
+  }
+}
+
+impl<'a> From<FillBetween<'a>> for PlotData<'a> {
+  fn from(data: FillBetween<'a>) -> PlotData<'a> {
+    PlotData::FillBetween(data)
   }
 }

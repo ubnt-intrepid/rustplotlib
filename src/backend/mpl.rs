@@ -70,6 +70,18 @@ impl Backend for Matplotlib {
     self.exec(format!("plt.ylim(({}, {}))", ylim.0, ylim.1))
   }
 
+  fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self> {
+    self.exec(format!("plt.style.use('{}')", stylename))
+  }
+
+  fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
+    self.exec(format!("plt.savefig('{}')", filename))
+  }
+
+  fn show(&mut self) -> io::Result<&mut Self> {
+    self.exec("plt.show()")
+  }
+
   fn scatter(&mut self,
              xdata: &[f64],
              ydata: &[f64],
@@ -100,7 +112,7 @@ impl Backend for Matplotlib {
           linestyle: &Option<String>,
           linewidth: &Option<f64>)
           -> io::Result<&mut Self> {
-    let mut code = format!("plt.gca().plot({}, {}, ", to_pyvec(xdata), to_pyvec(ydata));
+    let mut code = format!("plt.plot({}, {}, ", to_pyvec(xdata), to_pyvec(ydata));
     if let &Some(ref label) = label {
       code += &format!("label='{}', ", label);
     }
@@ -120,16 +132,27 @@ impl Backend for Matplotlib {
     self.exec(code)
   }
 
-  fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self> {
-    self.exec(format!("plt.style.use('{}')", stylename))
-  }
-
-  fn savefig(&mut self, filename: &str) -> io::Result<&mut Self> {
-    self.exec(format!("plt.savefig('{}')", filename))
-  }
-
-  fn show(&mut self) -> io::Result<&mut Self> {
-    self.exec("plt.show()")
+  fn fill_between(&mut self,
+                  x: &[f64],
+                  y1: &[f64],
+                  y2: &[f64],
+                  where_: &Option<&[bool]>,
+                  interpolate: bool,
+                  step: &Option<String>)
+                  -> io::Result<&mut Self> {
+    let mut code = format!("plt.fill_between({}, {}, {}, ",
+                           to_pyvec(x),
+                           to_pyvec(y1),
+                           to_pyvec(y2));
+    if let &Some(ref where_) = where_ {
+      code += &format!("where='{}', ", to_pyvec(where_));
+    }
+    code += &format!("interpolate={}, ", interpolate.to_pystr());
+    if let &Some(ref step) = step {
+      code += &format!("step='{}', ", step);
+    }
+    code += ")";
+    self.exec(code)
   }
 }
 
@@ -139,7 +162,25 @@ impl Drop for Matplotlib {
   }
 }
 
-fn to_pyvec(data: &[f64]) -> String {
-  let data: Vec<String> = data.iter().map(|x| format!("{}", x)).collect();
+trait ToPyStr {
+  fn to_pystr(&self) -> String;
+}
+impl ToPyStr for f64 {
+  fn to_pystr(&self) -> String {
+    format!("{}", self)
+  }
+}
+impl ToPyStr for bool {
+  fn to_pystr(&self) -> String {
+    if *self {
+      "True".to_owned()
+    } else {
+      "False".to_owned()
+    }
+  }
+}
+
+fn to_pyvec<T: ToPyStr>(data: &[T]) -> String {
+  let data: Vec<String> = data.iter().map(|x| x.to_pystr()).collect();
   format!("[{}]", data.join(","))
 }

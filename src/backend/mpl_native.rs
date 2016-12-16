@@ -121,6 +121,22 @@ impl Backend for MatplotlibNative {
     Ok(self)
   }
 
+  fn fill_between(&mut self,
+                  x: &[f64],
+                  y1: &[f64],
+                  y2: &[f64],
+                  where_: &Option<&[bool]>,
+                  interpolate: bool,
+                  step: &Option<String>)
+                  -> io::Result<&mut Self> {
+    let kwargs = PyDict::new(self.py());
+    kwargs.set_item(self.py(), "where", where_).unwrap();
+    kwargs.set_item(self.py(), "interpolate", interpolate).unwrap();
+    kwargs.set_item(self.py(), "step", step).unwrap();
+    self.plt.call(self.py(), "fill_between", (x, y1, y2), Some(&kwargs)).unwrap();
+    Ok(self)
+  }
+
   fn set_style(&mut self, stylename: &str) -> io::Result<&mut Self> {
     use cpython::FromPyObject;
     let style = self.plt
