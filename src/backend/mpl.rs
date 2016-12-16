@@ -50,8 +50,8 @@ impl Backend for Matplotlib {
     self.exec("plt.figure()")
   }
 
-  fn subplot(&mut self, i: u32, j: u32, k: u32) -> io::Result<&mut Self> {
-    self.exec(format!("plt.subplot({}, {}, {})", i, j, k))
+  fn subplot(&mut self, rows: u32, cols: u32, n: u32) -> io::Result<&mut Self> {
+    self.exec(format!("plt.subplot({}, {}, {})", rows, cols, n))
   }
 
   fn grid(&mut self, grid: bool) -> io::Result<&mut Self> {

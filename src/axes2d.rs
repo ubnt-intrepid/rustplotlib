@@ -14,13 +14,6 @@ pub struct Axes2D<'a> {
 }
 
 impl<'a> Axes2D<'a> {
-  /// create an empty axes.
-  ///
-  /// This method is the shortcut of `Default::default()`.
-  pub fn new() -> Self {
-    Default::default()
-  }
-
   /// add a plot data.
   pub fn add<P: Into<PlotData<'a>>>(mut self, p: P) -> Self {
     self.plot_data.push(p.into());
@@ -235,10 +228,6 @@ pub struct FillBetween<'a> {
 }
 
 impl<'a> FillBetween<'a> {
-  pub fn new() -> FillBetween<'a> {
-    FillBetween::default()
-  }
-
   pub fn data(mut self, x: &'a [f64], y1: &'a [f64], y2: &'a [f64]) -> Self {
     self.x = x;
     self.y1 = y1;

@@ -3,34 +3,34 @@ extern crate rustplotlib;
 extern crate cpython;
 
 use rustplotlib::{backend, Backend};
-use rustplotlib::{Figure, Axes2D, Scatter, Line2D, FillBetween};
+use rustplotlib::{Figure, Subplots, Axes2D, Scatter, Line2D, FillBetween};
 use std::f64::consts::PI;
 
 fn make_figure<'a>(x: &'a [f64], y1: &'a [f64], y2: &'a [f64]) -> Figure<'a> {
-  let ax1 = Axes2D::new()
-    .add(Scatter::new(r"$y_1 = \sin(x)$")
-      .data(x, y1)
-      .marker("o"))
-    .add(Line2D::new(r"$y_2 = \cos(x)$")
-      .data(x, y2)
-      .color("red")
-      .marker("x")
-      .linestyle("--")
-      .linewidth(1.0))
-    .xlabel("Time [sec]")
-    .ylabel("Distance [mm]")
-    .legend("lower right")
-    .xlim(0.0, 8.0)
-    .ylim(-2.0, 2.0);
-
-  let ax2 = Axes2D::new()
-    .add(FillBetween::new()
-      .data(x, y1, y2)
-      .interpolate(true))
-    .xlim(0.0, 8.0)
-    .ylim(-1.5, 1.5);
-
-  Figure::new().subplots(2, 1, vec![Some(ax1), Some(ax2)])
+  Figure::default().subplots(Subplots::new(2, 1)
+    .at(0,
+        Axes2D::default()
+          .add(Scatter::new(r"$y_1 = \sin(x)$")
+            .data(x, y1)
+            .marker("o"))
+          .add(Line2D::new(r"$y_2 = \cos(x)$")
+            .data(x, y2)
+            .color("red")
+            .marker("x")
+            .linestyle("--")
+            .linewidth(1.0))
+          .xlabel("Time [sec]")
+          .ylabel("Distance [mm]")
+          .legend("lower right")
+          .xlim(0.0, 8.0)
+          .ylim(-2.0, 2.0))
+    .at(1,
+        Axes2D::default()
+          .add(FillBetween::default()
+            .data(x, y1, y2)
+            .interpolate(true))
+          .xlim(0.0, 8.0)
+          .ylim(-1.5, 1.5)))
 }
 
 fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
