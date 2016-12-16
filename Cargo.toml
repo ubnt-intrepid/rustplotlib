@@ -1,6 +1,6 @@
 [package]
 name = "rustplotlib"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Yusuke Sasaki <yusuke.sasaki.nuem@gmail.com>"]
 description = "A tiny library to create charts, by using matplotlib."
 homepage = "https://github.com/ubnt-intrepid/rustplotlib"
