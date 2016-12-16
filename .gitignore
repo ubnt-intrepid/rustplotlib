@@ -6,5 +6,7 @@ Cargo.lock
 *.svg
 *.pkl
 
+!examples/*.png
+
 scatter.py
 gh-pages/
