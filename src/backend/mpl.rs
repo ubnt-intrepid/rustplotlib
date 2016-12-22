@@ -54,6 +54,14 @@ impl Backend for Matplotlib {
     self.exec(format!("plt.subplot({}, {}, {})", rows, cols, n))
   }
 
+  fn xlabel(&mut self, xlabel: &str) -> io::Result<&mut Self> {
+    self.exec(format!("plt.xlabel('{}')", xlabel))
+  }
+
+  fn ylabel(&mut self, ylabel: &str) -> io::Result<&mut Self> {
+    self.exec(format!("plt.ylabel('{}')", ylabel))
+  }
+
   fn grid(&mut self, grid: bool) -> io::Result<&mut Self> {
     self.exec(format!("plt.grid({})", if grid { "True" } else { "False" }))
   }
@@ -153,6 +161,10 @@ impl Backend for Matplotlib {
     }
     code += ")";
     self.exec(code)
+  }
+
+  fn tight_layout(&mut self) -> io::Result<&mut Self> {
+    self.exec("plt.tight_layout()")
   }
 }
 

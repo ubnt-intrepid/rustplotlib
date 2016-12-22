@@ -19,9 +19,9 @@ fn make_figure<'a>(x: &'a [f64], y1: &'a [f64], y2: &'a [f64]) -> Figure<'a> {
             .marker("x")
             .linestyle("--")
             .linewidth(1.0))
+          .legend("lower right")
           .xlabel("Time [sec]")
           .ylabel("Distance [mm]")
-          .legend("lower right")
           .xlim(0.0, 8.0)
           .ylim(-2.0, 2.0))
     .at(1,
@@ -29,6 +29,8 @@ fn make_figure<'a>(x: &'a [f64], y1: &'a [f64], y2: &'a [f64]) -> Figure<'a> {
           .add(FillBetween::default()
             .data(x, y1, y2)
             .interpolate(true))
+          .xlabel("Time [sec]")
+          .ylabel("Distance [mm]")
           .xlim(0.0, 8.0)
           .ylim(-1.5, 1.5)))
 }
@@ -37,6 +39,7 @@ fn apply_mpl(fig: &Figure, filename: &str) -> std::io::Result<()> {
   let mut mp = backend::Matplotlib::new()?;
   mp.set_style("ggplot")?;
   fig.apply(&mut mp)?;
+  mp.tight_layout()?;
   mp.savefig(filename)?
     .dump_pickle(format!("{}.pkl", filename))?
     .wait()
@@ -47,6 +50,7 @@ fn apply_mpl_native(fig: &Figure, filename: &str) -> std::io::Result<()> {
   let mut mp = backend::MatplotlibNative::new();
   mp.set_style("dark_background")?;
   fig.apply(&mut mp)?;
+  mp.tight_layout()?;
   mp.savefig(filename)?;
   mp.dump_pickle(format!("{}.pkl", filename))?;
   Ok(())

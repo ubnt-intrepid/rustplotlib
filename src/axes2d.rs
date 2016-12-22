@@ -66,6 +66,12 @@ impl<'a> Axes2D<'a> {
     for ref plot in &self.plot_data {
       plot.apply(mpl)?;
     }
+    if let Some(ref xlabel) = self.xlabel {
+      mpl.xlabel(xlabel)?;
+    }
+    if let Some(ref ylabel) = self.ylabel {
+      mpl.ylabel(ylabel)?;
+    }
     mpl.grid(self.grid)?;
     if let Some(ref loc) = self.legend {
       mpl.legend(loc)?;

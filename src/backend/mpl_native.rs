@@ -63,6 +63,16 @@ impl Backend for MatplotlibNative {
     Ok(self)
   }
 
+  fn xlabel(&mut self, xlabel: &str) -> io::Result<&mut Self> {
+    self.plt.call(self.py(), "xlabel", (xlabel,), None).unwrap();
+    Ok(self)
+  }
+
+  fn ylabel(&mut self, ylabel: &str) -> io::Result<&mut Self> {
+    self.plt.call(self.py(), "ylabel", (ylabel,), None).unwrap();
+    Ok(self)
+  }
+
   fn grid(&mut self, grid: bool) -> io::Result<&mut Self> {
     self.plt.call(self.py(), "grid", (grid,), None).unwrap();
     Ok(self)
@@ -144,6 +154,11 @@ impl Backend for MatplotlibNative {
       .and_then(|ref style| PyModule::extract(self.py(), style))
       .unwrap();
     style.call(self.py(), "use", (stylename,), None).unwrap();
+    Ok(self)
+  }
+
+  fn tight_layout(&mut self) -> io::Result<&mut Self> {
+    self.plt.call(self.py(), "tight_layout", NoArgs, None).unwrap();
     Ok(self)
   }
 }

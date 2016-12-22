@@ -12,6 +12,8 @@ pub use self::mpl_native::MatplotlibNative;
 pub trait Backend {
   fn figure(&mut self) -> io::Result<&mut Self>;
   fn subplot(&mut self, rows: u32, cols: u32, n: u32) -> io::Result<&mut Self>;
+  fn xlabel(&mut self, xlabel: &str) -> io::Result<&mut Self>;
+  fn ylabel(&mut self, ylabel: &str) -> io::Result<&mut Self>;
   fn grid(&mut self, grid: bool) -> io::Result<&mut Self>;
   fn legend(&mut self, loc: &str) -> io::Result<&mut Self>;
   fn xlim(&mut self, xlim: &(f64, f64)) -> io::Result<&mut Self>;
@@ -43,4 +45,5 @@ pub trait Backend {
                   interpolate: bool,
                   step: &Option<String>)
                   -> io::Result<&mut Self>;
+  fn tight_layout(&mut self) -> io::Result<&mut Self>;
 }
