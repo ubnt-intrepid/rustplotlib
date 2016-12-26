@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PlotData","Plot type."]],"mod":[["backend",""]],"struct":[["Axes2D","Represents an instance of `matplotlib.axes.Axes`."],["Figure","Represents an instance of `matplotlib.figure.Figure`."],["FillBetween",""],["Line2D",""],["Scatter",""],["Subplots",""]]});

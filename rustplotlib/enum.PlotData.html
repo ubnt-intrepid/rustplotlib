@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `PlotData` enum in crate `rustplotlib`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, PlotData">
+
+    <title>rustplotlib::PlotData - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>rustplotlib</a></p><script>window.sidebarCurrent = {name: 'PlotData', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>rustplotlib</a>::<wbr><a class='enum' href=''>PlotData</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-372' class='srclink' href='../src/rustplotlib/src/axes2d.rs.html#92-96' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum PlotData&lt;'a&gt; {
+    Scatter(<a class='struct' href='../rustplotlib/struct.Scatter.html' title='rustplotlib::Scatter'>Scatter</a>&lt;'a&gt;),
+    Line2D(<a class='struct' href='../rustplotlib/struct.Line2D.html' title='rustplotlib::Line2D'>Line2D</a>&lt;'a&gt;),
+    FillBetween(<a class='struct' href='../rustplotlib/struct.FillBetween.html' title='rustplotlib::FillBetween'>FillBetween</a>&lt;'a&gt;),
+}</pre><div class='docblock'><p>Plot type.</p>
+</div><h2 class='variants'>Variants</h2>
+<span id='variant.Scatter' class='variant'><span id='Scatter.v' class='invisible'><code>Scatter(<a class='struct' href='../rustplotlib/struct.Scatter.html' title='rustplotlib::Scatter'>Scatter</a>&lt;'a&gt;)</code></span></span><span id='variant.Line2D' class='variant'><span id='Line2D.v' class='invisible'><code>Line2D(<a class='struct' href='../rustplotlib/struct.Line2D.html' title='rustplotlib::Line2D'>Line2D</a>&lt;'a&gt;)</code></span></span><span id='variant.FillBetween' class='variant'><span id='FillBetween.v' class='invisible'><code>FillBetween(<a class='struct' href='../rustplotlib/struct.FillBetween.html' title='rustplotlib::FillBetween'>FillBetween</a>&lt;'a&gt;)</code></span></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-43' class='srclink' href='../src/rustplotlib/src/axes2d.rs.html#98-106' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.apply' class='method'><span id='apply.v' class='invisible'><code>fn <a href='#method.apply' class='fnname'>apply</a>&lt;B:&nbsp;<a class='trait' href='../rustplotlib/backend/trait.Backend.html' title='rustplotlib::backend::Backend'>Backend</a>&gt;(&amp;self, mpl: &amp;mut B) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></span></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-380' class='srclink' href='../src/rustplotlib/src/axes2d.rs.html#91' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='../rustplotlib/struct.Scatter.html' title='rustplotlib::Scatter'>Scatter</a>&lt;'a&gt;&gt; for <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-73' class='srclink' href='../src/rustplotlib/src/axes2d.rs.html#153-157' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from' class='method'><span id='from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(data: <a class='struct' href='../rustplotlib/struct.Scatter.html' title='rustplotlib::Scatter'>Scatter</a>) -&gt; <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a></code></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='../rustplotlib/struct.Line2D.html' title='rustplotlib::Line2D'>Line2D</a>&lt;'a&gt;&gt; for <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-104' class='srclink' href='../src/rustplotlib/src/axes2d.rs.html#219-223' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-1' class='method'><span id='from.v-1' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(data: <a class='struct' href='../rustplotlib/struct.Line2D.html' title='rustplotlib::Line2D'>Line2D</a>&lt;'a&gt;) -&gt; <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html' title='core::convert::From'>From</a>&lt;<a class='struct' href='../rustplotlib/struct.FillBetween.html' title='rustplotlib::FillBetween'>FillBetween</a>&lt;'a&gt;&gt; for <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-128' class='srclink' href='../src/rustplotlib/src/axes2d.rs.html#270-274' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.from-2' class='method'><span id='from.v-2' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from' class='fnname'>from</a>(data: <a class='struct' href='../rustplotlib/struct.FillBetween.html' title='rustplotlib::FillBetween'>FillBetween</a>&lt;'a&gt;) -&gt; <a class='enum' href='../rustplotlib/enum.PlotData.html' title='rustplotlib::PlotData'>PlotData</a>&lt;'a&gt;</code></span></h4>
+<div class='docblock'><p>Performs the conversion.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "rustplotlib";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

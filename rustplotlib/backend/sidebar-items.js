@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Matplotlib","Represents an instance of Python process which executes operations."]],"trait":[["Backend",""]]});
